@@ -21,7 +21,7 @@ export const Footer = () => {
           <div>
             <h3 className="font-semibold mb-4 text-foreground text-xl">Our Mission</h3>
             <p className="text-muted-foreground leading-relaxed">
-              Find your dream role in your dream location
+              Find your dream role in your dream location more efficiently
             </p>
           </div>
           
