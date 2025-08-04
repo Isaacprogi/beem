@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, Filter, MapPin, Briefcase, GraduationCap } from "lucide-react";
+import { Search, Filter, MapPin, Briefcase, GraduationCap, Clock } from "lucide-react";
 
 const allJobs = [
   {
@@ -165,6 +165,21 @@ export const Jobs = () => {
                       <SelectItem value="masters">Master's</SelectItem>
                       <SelectItem value="doctorate">Doctorate</SelectItem>
                       <SelectItem value="other">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Select>
+                    <SelectTrigger className="w-[180px] h-12">
+                      <Clock className="h-4 w-4 mr-2" />
+                      <SelectValue placeholder="Experience" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="internship">Internship</SelectItem>
+                      <SelectItem value="less-than-1">&lt;1 years</SelectItem>
+                      <SelectItem value="1-2-years">1-2 years</SelectItem>
+                      <SelectItem value="3-4-years">3-4 years</SelectItem>
+                      <SelectItem value="5-7-years">5-7 years</SelectItem>
+                      <SelectItem value="8-14-years">8-14 years</SelectItem>
+                      <SelectItem value="15-plus-years">15+ years</SelectItem>
                     </SelectContent>
                   </Select>
                   <Button variant="outline" size="lg" className="gap-2">
