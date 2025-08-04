@@ -20,6 +20,7 @@ const allJobs = [
     visaType: "Tier 2 Visa",
     description: "We're looking for an experienced software engineer to join our growing team. You'll work on cutting-edge projects using React, Node.js, and cloud technologies.",
     featured: true,
+    logo: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=100&h=100&fit=crop&crop=center",
   },
   {
     id: "2",
@@ -32,6 +33,7 @@ const allJobs = [
     posted: "4 hours ago",
     visaType: "H1-B Visa",
     description: "Join our data science team to develop machine learning models and extract insights from large datasets using Python, TensorFlow, and AWS.",
+    logo: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=100&h=100&fit=crop&crop=center",
   },
   {
     id: "3",
@@ -44,6 +46,7 @@ const allJobs = [
     posted: "6 hours ago",
     visaType: "Skilled Worker Visa",
     description: "Lead product development and strategy for our innovative B2B platform. Experience with agile methodologies and user research required.",
+    logo: "https://images.unsplash.com/photo-1531297484001-80022131f5a1?w=100&h=100&fit=crop&crop=center",
   },
   {
     id: "4",
@@ -56,6 +59,7 @@ const allJobs = [
     posted: "8 hours ago",
     visaType: "O-1 Visa",
     description: "Design and maintain cloud infrastructure, automate deployment processes using Kubernetes, Docker, and ensure system reliability.",
+    logo: "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?w=100&h=100&fit=crop&crop=center",
   },
   {
     id: "5",
@@ -68,6 +72,7 @@ const allJobs = [
     posted: "1 day ago",
     visaType: "Tier 2 Visa",
     description: "Create intuitive user experiences for our digital products. Portfolio of mobile and web designs required. Figma and user testing experience preferred.",
+    logo: "https://images.unsplash.com/photo-1581090464777-f3220bbe1b8b?w=100&h=100&fit=crop&crop=center",
   },
   {
     id: "6",
@@ -80,6 +85,7 @@ const allJobs = [
     posted: "1 day ago",
     visaType: "H1-B Visa",
     description: "Build and deploy ML models at scale. Experience with TensorFlow, PyTorch, and cloud platforms required. PhD in Computer Science preferred.",
+    logo: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=100&h=100&fit=crop&crop=center",
   },
   {
     id: "7",
@@ -92,6 +98,7 @@ const allJobs = [
     posted: "2 days ago",
     visaType: "Skilled Worker Visa",
     description: "Develop responsive web applications using React, TypeScript, and modern CSS frameworks. Experience with accessibility standards required.",
+    logo: "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?w=100&h=100&fit=crop&crop=center",
   },
   {
     id: "8",
@@ -104,6 +111,7 @@ const allJobs = [
     posted: "2 days ago",
     visaType: "H1-B Visa",
     description: "Implement security measures and conduct vulnerability assessments. Experience with penetration testing and security frameworks required.",
+    logo: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=100&h=100&fit=crop&crop=center",
   },
   {
     id: "9",
@@ -116,6 +124,7 @@ const allJobs = [
     posted: "3 days ago",
     visaType: "Tier 2 Visa",
     description: "Build scalable backend services using Python/Django and PostgreSQL. Experience with microservices architecture and API design preferred.",
+    logo: "https://images.unsplash.com/photo-1531297484001-80022131f5a1?w=100&h=100&fit=crop&crop=center",
   },
 ];
 

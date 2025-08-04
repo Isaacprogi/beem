@@ -16,6 +16,7 @@ interface JobCardProps {
     visaType: string;
     description: string;
     featured?: boolean;
+    logo?: string;
   };
 }
 
@@ -33,8 +34,16 @@ export const JobCard = ({ job }: JobCardProps) => {
       <CardHeader className="pb-4">
         <div className="flex items-start justify-between gap-4">
           <div className="flex items-center gap-3 min-w-0 flex-1">
-            <div className="h-12 w-12 rounded-xl bg-gradient-primary/10 border border-primary/20 flex items-center justify-center flex-shrink-0">
-              <Building2 className="h-6 w-6 text-primary" />
+            <div className="h-12 w-12 rounded-xl bg-white border border-border/20 flex items-center justify-center flex-shrink-0 overflow-hidden">
+              {job.logo ? (
+                <img 
+                  src={job.logo} 
+                  alt={`${job.company} logo`}
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <Building2 className="h-6 w-6 text-primary" />
+              )}
             </div>
             <div className="min-w-0 flex-1">
               <h3 className="font-semibold text-lg text-card-foreground group-hover:text-primary transition-colors leading-tight">
