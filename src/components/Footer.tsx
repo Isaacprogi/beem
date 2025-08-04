@@ -39,7 +39,7 @@ export const Footer = () => {
             <div className="bg-gradient-surface p-6 rounded-xl border border-border/50">
               <div className="flex items-center mb-4">
                 <img 
-                  src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=64&h=64&fit=crop&crop=face" 
+                  src="https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=64&h=64&fit=crop&crop=face" 
                   alt="Sarah Chen" 
                   className="w-12 h-12 rounded-full mr-4"
                 />
@@ -62,7 +62,7 @@ export const Footer = () => {
             <div className="bg-gradient-surface p-6 rounded-xl border border-border/50">
               <div className="flex items-center mb-4">
                 <img 
-                  src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=64&h=64&fit=crop&crop=face" 
+                  src="https://images.unsplash.com/photo-1581092795360-fd1ca04f0952?w=64&h=64&fit=crop&crop=face" 
                   alt="Marcus Johnson" 
                   className="w-12 h-12 rounded-full mr-4"
                 />
@@ -85,7 +85,7 @@ export const Footer = () => {
             <div className="bg-gradient-surface p-6 rounded-xl border border-border/50">
               <div className="flex items-center mb-4">
                 <img 
-                  src="https://images.unsplash.com/photo-1581090464777-f3220bbe1b8b?w=64&h=64&fit=crop&crop=face" 
+                  src="https://images.unsplash.com/photo-1494790108755-2616b612b786?w=64&h=64&fit=crop&crop=face" 
                   alt="Priya Patel" 
                   className="w-12 h-12 rounded-full mr-4"
                 />
@@ -109,7 +109,7 @@ export const Footer = () => {
             <div className="bg-gradient-surface p-6 rounded-xl border border-border/50">
               <div className="flex items-center mb-4">
                 <img 
-                  src="https://images.unsplash.com/photo-1539571696285-e7d0ca935c65?w=64&h=64&fit=crop&crop=face" 
+                  src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=64&h=64&fit=crop&crop=face" 
                   alt="David Kim" 
                   className="w-12 h-12 rounded-full mr-4"
                 />
@@ -132,7 +132,7 @@ export const Footer = () => {
             <div className="bg-gradient-surface p-6 rounded-xl border border-border/50 md:col-start-1 lg:col-start-auto">
               <div className="flex items-center mb-4">
                 <img 
-                  src="https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=64&h=64&fit=crop&crop=face" 
+                  src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=64&h=64&fit=crop&crop=face" 
                   alt="Ahmed Hassan" 
                   className="w-12 h-12 rounded-full mr-4"
                 />
@@ -155,7 +155,7 @@ export const Footer = () => {
             <div className="bg-gradient-surface p-6 rounded-xl border border-border/50 md:col-start-2 lg:col-start-auto">
               <div className="flex items-center mb-4">
                 <img 
-                  src="https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?w=64&h=64&fit=crop&crop=face" 
+                  src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=64&h=64&fit=crop&crop=face" 
                   alt="Elena Rodriguez" 
                   className="w-12 h-12 rounded-full mr-4"
                 />
