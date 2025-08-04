@@ -59,8 +59,8 @@ export const Header = () => {
           <Button variant="ghost" size="sm" className="text-sm font-medium">
             Sign In
           </Button>
-          <Button size="sm" className="bg-gradient-primary hover:shadow-glow transition-all text-sm font-medium px-6">
-            Get Started
+          <Button size="sm" className="bg-gradient-primary hover:shadow-glow transition-all text-sm font-medium px-6" asChild>
+            <Link to="/signup">Get Started</Link>
           </Button>
         </div>
       </div>
