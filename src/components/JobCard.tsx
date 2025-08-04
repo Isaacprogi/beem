@@ -93,7 +93,12 @@ export const JobCard = ({ job }: JobCardProps) => {
         <Button 
           className="w-full bg-gradient-primary hover:shadow-glow transition-all group"
           size="sm"
-          onClick={() => job.url && window.open(job.url, '_blank')}
+          onClick={(e) => {
+            e.preventDefault();
+            if (job.url) {
+              window.open(job.url, '_blank', 'noopener,noreferrer');
+            }
+          }}
         >
           <span>View Details & Apply</span>
           <ExternalLink className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
