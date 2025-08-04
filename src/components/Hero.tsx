@@ -17,7 +17,7 @@ export const Hero = () => {
             className="px-6 py-2 text-sm font-medium bg-gradient-surface border border-border/50 shadow-sm"
           >
             <Sparkles className="h-4 w-4 mr-2 text-primary" />
-            3,247+ Jobs Updated Daily
+            <span className="text-emerald-500 font-semibold">250,000+</span> Jobs Updated Daily
           </Badge>
           
           <h1 className="text-5xl lg:text-7xl font-bold tracking-tight leading-none">
@@ -56,18 +56,24 @@ export const Hero = () => {
             </Button>
           </div>
           
-          <div className="flex items-center justify-center gap-8 pt-8 text-sm">
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <Globe className="h-4 w-4 text-primary" />
-              <span>UK & USA</span>
+          <div className="flex flex-col items-center gap-4 pt-8">
+            <div className="text-center">
+              <p className="text-sm font-medium text-muted-foreground mb-1">Trusted by</p>
+              <p className="text-2xl font-bold text-emerald-500">7,000+ Job Seekers</p>
             </div>
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <Shield className="h-4 w-4 text-success" />
-              <span>Verified Employers</span>
-            </div>
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />
-              <span>Live Updates</span>
+            <div className="flex items-center justify-center gap-8 text-sm">
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <Globe className="h-4 w-4 text-primary" />
+                <span>UK & USA</span>
+              </div>
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <Shield className="h-4 w-4 text-success" />
+                <span>Verified Employers</span>
+              </div>
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />
+                <span>Live Updates</span>
+              </div>
             </div>
           </div>
         </div>
