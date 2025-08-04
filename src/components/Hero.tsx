@@ -17,7 +17,7 @@ export const Hero = () => {
             className="px-6 py-2 text-sm font-medium bg-gradient-surface border border-border/50 shadow-sm"
           >
             <Sparkles className="h-4 w-4 mr-2 text-primary" />
-            <span className="text-emerald-500 font-semibold">3,247+</span> Jobs Updated Daily
+            <span className="text-emerald-500 font-semibold">3,247+</span>{" "}Jobs Updated Daily
           </Badge>
           
           <h1 className="text-5xl lg:text-7xl font-bold tracking-tight leading-none">
