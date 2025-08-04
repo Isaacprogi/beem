@@ -33,7 +33,7 @@ export const Hero = () => {
             Real positions, real employers, real results.
           </p>
           
-          <div className="flex flex-col sm:flex-row gap-4 pt-6">
+          <div className="flex justify-center pt-6">
             <Button 
               size="lg" 
               className="bg-gradient-primary hover:shadow-glow transition-all text-lg px-8 py-6 h-auto group"
@@ -42,16 +42,6 @@ export const Hero = () => {
               <Link to="/jobs">
                 Start 24hr Free Trial
                 <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-              </Link>
-            </Button>
-            <Button 
-              variant="outline" 
-              size="lg"
-              className="text-lg px-8 py-6 h-auto border-border/50 hover:bg-muted/50"
-              asChild
-            >
-              <Link to="/jobs">
-                Browse Jobs
               </Link>
             </Button>
           </div>
