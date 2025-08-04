@@ -5,8 +5,8 @@ export const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div>
             <div className="flex items-center space-x-3 mb-6">
-              <div className="h-10 w-10 rounded-xl bg-gradient-primary flex items-center justify-center shadow-glow">
-                <span className="text-primary-foreground font-bold text-lg">B</span>
+              <div className="h-10 w-10 rounded-xl bg-white flex items-center justify-center shadow-glow p-1">
+                <img src="/lovable-uploads/48260f4b-bc58-4d8f-b29e-556ddf902112.png" alt="BleemHire" className="w-full h-full object-contain" />
               </div>
               <span className="font-bold text-2xl bg-gradient-primary bg-clip-text text-transparent">
                 BleemHire
