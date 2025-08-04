@@ -2,8 +2,8 @@ export const Footer = () => {
   return (
     <footer className="bg-gradient-surface border-t border-border/50 mt-16">
       <div className="container py-16">
-        <div className="grid grid-cols-1 gap-8">
-          <div className="mx-auto text-center">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div>
             <div className="flex items-center space-x-3 mb-6">
               <div className="h-10 w-10 rounded-xl bg-gradient-primary flex items-center justify-center shadow-glow">
                 <span className="text-primary-foreground font-bold text-lg">V</span>
@@ -15,6 +15,13 @@ export const Footer = () => {
             <p className="text-muted-foreground max-w-md leading-relaxed">
               The most comprehensive platform for finding visa-sponsored job opportunities 
               in the UK and USA. Updated daily with verified positions from real employers.
+            </p>
+          </div>
+          
+          <div>
+            <h3 className="font-semibold mb-4 text-foreground text-xl">Our Mission</h3>
+            <p className="text-muted-foreground leading-relaxed">
+              Find your dream role in your dream location
             </p>
           </div>
           
