@@ -6,10 +6,10 @@ export const Footer = () => {
           <div>
             <div className="flex items-center space-x-3 mb-6">
               <div className="h-10 w-10 rounded-xl bg-gradient-primary flex items-center justify-center shadow-glow">
-                <span className="text-primary-foreground font-bold text-lg">V</span>
+                <span className="text-primary-foreground font-bold text-lg">B</span>
               </div>
               <span className="font-bold text-2xl bg-gradient-primary bg-clip-text text-transparent">
-                VisaJobs
+                BleemHire
               </span>
             </div>
             <p className="text-muted-foreground max-w-md leading-relaxed">
@@ -54,7 +54,7 @@ export const Footer = () => {
                 ))}
               </div>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                "Found my software engineer role through VisaJobs in just 3 weeks! The visa sponsorship listings were exactly what I needed."
+                "Found my software engineer role through BleemHire in just 3 weeks! The visa sponsorship listings were exactly what I needed."
               </p>
             </div>
 
@@ -177,7 +177,7 @@ export const Footer = () => {
         </div>
 
         <div className="border-t border-border/50 pt-8 text-center text-sm text-muted-foreground space-y-2">
-          <p>&copy; 2024 VisaJobs. All rights reserved. Made with 💜 for international professionals.</p>
+          <p>&copy; 2024 BleemHire. All rights reserved. Made with 💜 for international professionals.</p>
           <div className="flex items-center justify-center gap-4">
             <a href="mailto:info@bleemhire.com" className="hover:text-primary transition-colors">info@bleemhire.com</a>
             <span>•</span>

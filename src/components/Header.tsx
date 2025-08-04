@@ -12,11 +12,11 @@ export const Header = () => {
         <Link to="/" className="flex items-center space-x-3 group">
           <div className="relative">
             <div className="h-10 w-10 rounded-xl bg-gradient-primary flex items-center justify-center shadow-glow group-hover:shadow-xl transition-all">
-              <span className="text-primary-foreground font-bold text-lg">V</span>
+              <span className="text-primary-foreground font-bold text-lg">B</span>
             </div>
           </div>
           <span className="font-bold text-xl bg-gradient-primary bg-clip-text text-transparent">
-            VisaJobs
+            BleemHire
           </span>
         </Link>
         
