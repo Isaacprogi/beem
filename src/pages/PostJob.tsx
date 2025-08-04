@@ -13,7 +13,8 @@ export const PostJob = () => {
     firstName: "",
     lastName: "",
     role: "",
-    email: ""
+    email: "",
+    applicationLink: ""
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -101,6 +102,17 @@ export const PostJob = () => {
                   onChange={handleChange("email")}
                   required
                   placeholder="Enter your work email"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="applicationLink">Job application link (if available)*</Label>
+                <Input
+                  id="applicationLink"
+                  type="url"
+                  value={formData.applicationLink}
+                  onChange={handleChange("applicationLink")}
+                  placeholder="https://example.com/apply"
                 />
               </div>
 
