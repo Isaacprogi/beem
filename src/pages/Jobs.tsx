@@ -21,7 +21,7 @@ const allJobs = [
     description: "We're looking for an experienced software engineer to join our growing team. You'll work on cutting-edge projects using React, Node.js, and cloud technologies.",
     featured: true,
     logo: "/src/assets/google-logo.png",
-    url: "https://careers.google.com/jobs/results/?location=London%2C%20UK",
+    url: "https://careers.google.com/",
   },
   {
     id: "2",
@@ -35,7 +35,7 @@ const allJobs = [
     visaType: "H1-B Visa",
     description: "Join our data science team to develop machine learning models and extract insights from large datasets using Python, TensorFlow, and AWS.",
     logo: "/src/assets/meta-logo.png",
-    url: "https://www.metacareers.com/jobs/?q=data%20scientist&location=San%20Francisco%2C%20CA",
+    url: "https://www.metacareers.com/",
   },
   {
     id: "3",
@@ -49,7 +49,7 @@ const allJobs = [
     visaType: "Skilled Worker Visa",
     description: "Lead product development and strategy for our innovative B2B platform. Experience with agile methodologies and user research required.",
     logo: "/src/assets/apple-logo.png",
-    url: "https://jobs.apple.com/en-gb/search?location=manchester-GBR",
+    url: "https://www.apple.com/careers/us/",
   },
   {
     id: "4",
@@ -63,7 +63,7 @@ const allJobs = [
     visaType: "O-1 Visa",
     description: "Design and maintain cloud infrastructure, automate deployment processes using Kubernetes, Docker, and ensure system reliability.",
     logo: "/src/assets/microsoft-logo.png",
-    url: "https://careers.microsoft.com/professionals/us/en/search-results?keywords=devops&location=Austin%2C%20Texas",
+    url: "https://careers.microsoft.com/",
   },
   {
     id: "5",
@@ -77,7 +77,7 @@ const allJobs = [
     visaType: "Tier 2 Visa",
     description: "Create intuitive user experiences for our digital products. Portfolio of mobile and web designs required. Figma and user testing experience preferred.",
     logo: "/src/assets/tesla-logo.png",
-    url: "https://www.tesla.com/careers/search/?query=UX%20designer&country=GB",
+    url: "https://www.tesla.com/careers",
   },
   {
     id: "6",
@@ -91,7 +91,7 @@ const allJobs = [
     visaType: "H1-B Visa",
     description: "Build and deploy ML models at scale. Experience with TensorFlow, PyTorch, and cloud platforms required. PhD in Computer Science preferred.",
     logo: "/src/assets/amazon-logo.png",
-    url: "https://www.amazon.jobs/en/search?base_query=machine%20learning&loc_query=Boston%2C%20MA%2C%20USA",
+    url: "https://www.amazon.jobs/",
   },
   {
     id: "7",
@@ -105,7 +105,7 @@ const allJobs = [
     visaType: "Skilled Worker Visa",
     description: "Develop responsive web applications using React, TypeScript, and modern CSS frameworks. Experience with accessibility standards required.",
     logo: "/src/assets/goldman-sachs-logo.png",
-    url: "https://www.goldmansachs.com/careers/find-a-role/",
+    url: "https://www.goldmansachs.com/careers",
   },
   {
     id: "8",
@@ -119,7 +119,7 @@ const allJobs = [
     visaType: "H1-B Visa",
     description: "Implement security measures and conduct vulnerability assessments. Experience with penetration testing and security frameworks required.",
     logo: "/src/assets/microsoft-logo.png",
-    url: "https://careers.microsoft.com/professionals/us/en/search-results?keywords=security%20engineer&location=Seattle%2C%20Washington",
+    url: "https://careers.microsoft.com/",
   },
   {
     id: "9",
@@ -133,7 +133,7 @@ const allJobs = [
     visaType: "Tier 2 Visa",
     description: "Build scalable backend services using Python/Django and PostgreSQL. Experience with microservices architecture and API design preferred.",
     logo: "/src/assets/bny-mellon-logo.png",
-    url: "https://jobs.bnymellon.com/jobs?keywords=backend%20developer&location=Bristol%2C%20England%2C%20United%20Kingdom",
+    url: "https://www.bny.com/corporate/global/en/careers/work-with-us.html",
   },
 ];
 
