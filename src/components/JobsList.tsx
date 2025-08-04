@@ -95,7 +95,7 @@ export const JobsList = () => {
         
         <div className="text-center mt-12">
           <p className="text-muted-foreground mb-4">
-            Want to see all {mockJobs.length * 10}+ jobs? Unlock full access with our premium membership.
+            Want to see all 250,000+ jobs? Unlock full access with our premium membership.
           </p>
           <Button 
             size="lg" 

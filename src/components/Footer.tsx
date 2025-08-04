@@ -117,7 +117,30 @@ export const Footer = () => {
               </p>
             </div>
 
-            {/* Review 4 */}
+            {/* Review 4 - New Review */}
+            <div className="bg-gradient-surface p-6 rounded-xl border border-border/50">
+              <div className="flex items-center mb-4">
+                <img 
+                  src="https://images.unsplash.com/photo-1539571696285-e7d0ca935c65?w=64&h=64&fit=crop&crop=face" 
+                  alt="David Kim" 
+                  className="w-12 h-12 rounded-full mr-4"
+                />
+                <div>
+                  <p className="font-semibold">David Kim</p>
+                  <p className="text-sm text-muted-foreground">San Francisco, USA • 2024</p>
+                </div>
+              </div>
+              <div className="flex mb-3">
+                {[...Array(5)].map((_, i) => (
+                  <span key={i} className="text-yellow-400 text-lg">★</span>
+                ))}
+              </div>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                "Amazing platform! Found my machine learning engineer role with L-1 visa sponsorship in 6 weeks. Highly recommended!"
+              </p>
+            </div>
+
+            {/* Review 5 */}
             <div className="bg-gradient-surface p-6 rounded-xl border border-border/50 md:col-start-1 lg:col-start-auto">
               <div className="flex items-center mb-4">
                 <img 
@@ -140,7 +163,7 @@ export const Footer = () => {
               </p>
             </div>
 
-            {/* Review 5 */}
+            {/* Review 6 */}
             <div className="bg-gradient-surface p-6 rounded-xl border border-border/50 md:col-start-2 lg:col-start-auto">
               <div className="flex items-center mb-4">
                 <img 
