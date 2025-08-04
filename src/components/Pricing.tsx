@@ -73,10 +73,10 @@ export const Pricing = () => {
 
         <div className="text-center mt-12 space-y-2">
           <p className="text-sm text-muted-foreground">
-            Join 1,247+ professionals who found their dream job
+            Join 7,000+ professionals who found their dream job
           </p>
           <p className="text-xs text-muted-foreground">
-            No setup fees • No hidden costs • Full money-back guarantee
+            No setup fees • No hidden costs
           </p>
         </div>
       </div>

@@ -188,8 +188,13 @@ export const Footer = () => {
           </div>
         </div>
 
-        <div className="border-t border-border/50 pt-8 text-center text-sm text-muted-foreground">
+        <div className="border-t border-border/50 pt-8 text-center text-sm text-muted-foreground space-y-2">
           <p>&copy; 2024 VisaJobs. All rights reserved. Made with 💜 for international professionals.</p>
+          <div className="flex items-center justify-center gap-4">
+            <a href="mailto:info@bleemhire.com" className="hover:text-primary transition-colors">info@bleemhire.com</a>
+            <span>•</span>
+            <a href="#" className="hover:text-primary transition-colors">Privacy Policy</a>
+          </div>
         </div>
       </div>
     </footer>

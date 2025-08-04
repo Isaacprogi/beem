@@ -8,7 +8,7 @@ export const PricingPage = () => {
   const benefits = [
     {
       icon: <Users className="h-6 w-6" />,
-      title: "Join 1,247+ Success Stories",
+      title: "Join 7,000+ Success Stories",
       description: "Professionals who found their dream visa-sponsored jobs"
     },
     {
