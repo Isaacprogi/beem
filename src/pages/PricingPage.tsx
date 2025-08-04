@@ -31,7 +31,7 @@ export const PricingPage = () => {
   const faqs = [
     {
       question: "How does the 24-hour free trial work?",
-      answer: "Get full access to all features for 24 hours. No credit card required. After the trial, you can choose to subscribe for $9.99/month."
+      answer: "Get full access to all features for 24 hours. Card details will be required in order to access the free trial. After the trial, you can choose to subscribe for $9.99/month."
     },
     {
       question: "Are these real job opportunities?",
