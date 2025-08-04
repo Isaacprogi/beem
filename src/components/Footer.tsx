@@ -5,10 +5,10 @@ export const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div>
             <div className="flex items-center space-x-3 mb-6">
-              <div className="h-14 w-14 rounded-xl bg-white flex items-center justify-center shadow-lg p-2 border border-border/20">
+              <div className="h-20 w-20 rounded-xl bg-white flex items-center justify-center shadow-xl p-3 border border-border/20">
                 <img src="/lovable-uploads/48260f4b-bc58-4d8f-b29e-556ddf902112.png" alt="BleemHire" className="w-full h-full object-contain" />
               </div>
-              <span className="font-bold text-3xl bg-gradient-primary bg-clip-text text-transparent">
+              <span className="font-bold text-4xl bg-gradient-primary bg-clip-text text-transparent">
                 BleemHire
               </span>
             </div>
