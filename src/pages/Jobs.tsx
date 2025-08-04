@@ -177,10 +177,6 @@ export const Jobs = () => {
                       <SelectItem value="usa">🇺🇸 USA</SelectItem>
                     </SelectContent>
                   </Select>
-                  <Button variant="outline" size="lg" className="gap-2">
-                    <Briefcase className="h-4 w-4" />
-                    Job Type
-                  </Button>
                   <Select>
                     <SelectTrigger className="w-[180px] h-12">
                       <GraduationCap className="h-4 w-4 mr-2" />
