@@ -27,7 +27,7 @@ export default {
 				primary: {
 					DEFAULT: 'hsl(var(--primary))',
 					foreground: 'hsl(var(--primary-foreground))',
-					glow: 'hsl(var(--primary-glow))'
+					dark: 'hsl(var(--primary-dark))'
 				},
 				secondary: {
 					DEFAULT: 'hsl(var(--secondary))',
@@ -78,16 +78,21 @@ export default {
 				sm: 'calc(var(--radius) - 4px)'
 			},
 			backgroundImage: {
-				'gradient-hero': 'var(--gradient-hero)',
-				'gradient-card': 'var(--gradient-card)',
-				'gradient-accent': 'var(--gradient-accent)',
+				'gradient-primary': 'var(--gradient-primary)',
+				'gradient-dark': 'var(--gradient-dark)',
+				'gradient-surface': 'var(--gradient-surface)',
+				'gradient-glow': 'var(--gradient-glow)',
 			},
 			boxShadow: {
-				'card': 'var(--shadow-card)',
-				'hover': 'var(--shadow-hover)',
+				'sm': 'var(--shadow-sm)',
+				'md': 'var(--shadow-md)', 
+				'lg': 'var(--shadow-lg)',
+				'xl': 'var(--shadow-xl)',
+				'glow': 'var(--shadow-glow)',
 			},
 			transitionProperty: {
-				'smooth': 'var(--transition-smooth)',
+				'all': 'var(--transition-all)',
+				'transform': 'var(--transition-transform)',
 			},
 			keyframes: {
 				'accordion-down': {

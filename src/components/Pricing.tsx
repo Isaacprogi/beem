@@ -1,74 +1,82 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Check } from "lucide-react";
+import { Check, Star, Clock } from "lucide-react";
 
 export const Pricing = () => {
   const features = [
     "Access to 3,247+ visa-sponsored jobs",
-    "Daily job list updates",
-    "UK & USA positions",
+    "Real-time job updates every hour",
+    "UK & USA positions exclusively",
     "Verified employer information",
     "Direct application links",
-    "Email notifications for new jobs",
-    "Advanced search filters",
+    "Instant email notifications",
+    "Advanced search & filters",
     "Priority customer support",
   ];
 
   return (
-    <section id="pricing" className="py-20">
+    <section id="pricing" className="py-24 bg-gradient-glow">
       <div className="container">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold mb-4">Simple, Transparent Pricing</h2>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            Get unlimited access to all visa-sponsored job opportunities for one low monthly price.
+        <div className="text-center mb-16">
+          <Badge className="mb-4 bg-gradient-primary text-primary-foreground px-4 py-2">
+            <Star className="h-4 w-4 mr-2" />
+            Most Popular
+          </Badge>
+          <h2 className="text-4xl lg:text-5xl font-bold mb-6">
+            Simple, Transparent Pricing
+          </h2>
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto font-light">
+            Get unlimited access to all visa-sponsored opportunities for one low monthly price.
           </p>
         </div>
 
-        <div className="max-w-md mx-auto">
-          <Card className="relative bg-gradient-card border-2 border-primary/20 shadow-hover">
-            <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-              <Badge className="bg-gradient-accent text-success-foreground px-4 py-1">
-                Most Popular
-              </Badge>
-            </div>
+        <div className="max-w-lg mx-auto">
+          <Card className="relative bg-gradient-surface border-0 shadow-xl overflow-hidden">
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-primary" />
             
-            <CardHeader className="text-center pb-4">
-              <CardTitle className="text-2xl">Premium Access</CardTitle>
-              <div className="mt-4">
-                <span className="text-4xl font-bold">$9.99</span>
-                <span className="text-muted-foreground">/month</span>
+            <CardHeader className="text-center pb-6 pt-8">
+              <CardTitle className="text-3xl font-bold">Premium Access</CardTitle>
+              <div className="mt-6">
+                <span className="text-6xl font-bold bg-gradient-primary bg-clip-text text-transparent">$9.99</span>
+                <span className="text-xl text-muted-foreground ml-2">/month</span>
               </div>
-              <p className="text-sm text-muted-foreground mt-2">
-                Cancel anytime • 7-day free trial
-              </p>
+              <div className="flex items-center justify-center gap-2 mt-3 text-sm text-muted-foreground">
+                <Clock className="h-4 w-4" />
+                <span>24-hour free trial • Cancel anytime</span>
+              </div>
             </CardHeader>
 
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-4 px-8">
               {features.map((feature, index) => (
-                <div key={index} className="flex items-center space-x-3">
+                <div key={index} className="flex items-center gap-3">
                   <div className="flex-shrink-0">
-                    <Check className="h-5 w-5 text-success" />
+                    <div className="h-5 w-5 rounded-full bg-success/20 flex items-center justify-center">
+                      <Check className="h-3 w-3 text-success" />
+                    </div>
                   </div>
-                  <span className="text-sm">{feature}</span>
+                  <span className="text-sm text-card-foreground">{feature}</span>
                 </div>
               ))}
             </CardContent>
 
-            <CardFooter className="pt-6">
+            <CardFooter className="pt-8 pb-8 px-8">
               <Button 
-                className="w-full bg-gradient-hero hover:opacity-90 transition-opacity text-lg py-6 h-auto"
+                className="w-full bg-gradient-primary hover:shadow-glow transition-all text-lg py-6 h-auto font-semibold"
                 size="lg"
               >
-                Start Free Trial
+                Start 24hr Free Trial
               </Button>
             </CardFooter>
           </Card>
         </div>
 
-        <div className="text-center mt-8 text-sm text-muted-foreground">
-          <p>
-            Join 1,247+ professionals who found their dream job with visa sponsorship
+        <div className="text-center mt-12 space-y-2">
+          <p className="text-sm text-muted-foreground">
+            Join 1,247+ professionals who found their dream job
+          </p>
+          <p className="text-xs text-muted-foreground">
+            No setup fees • No hidden costs • Full money-back guarantee
           </p>
         </div>
       </div>

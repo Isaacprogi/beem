@@ -1,35 +1,57 @@
 import { Button } from "@/components/ui/button";
+import { Link, useLocation } from "react-router-dom";
 
 export const Header = () => {
+  const location = useLocation();
+  
+  const isActive = (path: string) => location.pathname === path;
+  
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-50 w-full bg-background/80 backdrop-blur-xl border-b border-border/50">
       <div className="container flex h-16 items-center justify-between">
-        <div className="flex items-center space-x-2">
-          <div className="flex items-center space-x-2">
-            <div className="h-8 w-8 rounded-lg bg-gradient-hero flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-sm">VS</span>
+        <Link to="/" className="flex items-center space-x-3 group">
+          <div className="relative">
+            <div className="h-10 w-10 rounded-xl bg-gradient-primary flex items-center justify-center shadow-glow group-hover:shadow-xl transition-all">
+              <span className="text-primary-foreground font-bold text-lg">V</span>
             </div>
-            <span className="font-bold text-xl">VisaJobs</span>
           </div>
-        </div>
+          <span className="font-bold text-xl bg-gradient-primary bg-clip-text text-transparent">
+            VisaJobs
+          </span>
+        </Link>
         
-        <nav className="hidden md:flex items-center space-x-6">
-          <a href="#jobs" className="text-foreground/80 hover:text-foreground transition-colors">
-            Jobs
-          </a>
-          <a href="#pricing" className="text-foreground/80 hover:text-foreground transition-colors">
+        <nav className="hidden md:flex items-center space-x-8">
+          <Link 
+            to="/" 
+            className={`text-sm font-medium transition-all hover:text-primary ${
+              isActive('/') ? 'text-primary' : 'text-muted-foreground'
+            }`}
+          >
+            Home
+          </Link>
+          <Link 
+            to="/jobs" 
+            className={`text-sm font-medium transition-all hover:text-primary ${
+              isActive('/jobs') ? 'text-primary' : 'text-muted-foreground'
+            }`}
+          >
+            Browse Jobs
+          </Link>
+          <Link 
+            to="/pricing" 
+            className={`text-sm font-medium transition-all hover:text-primary ${
+              isActive('/pricing') ? 'text-primary' : 'text-muted-foreground'
+            }`}
+          >
             Pricing
-          </a>
-          <a href="#about" className="text-foreground/80 hover:text-foreground transition-colors">
-            About
-          </a>
+          </Link>
         </nav>
 
-        <div className="flex items-center space-x-4">
-          <Button variant="ghost" size="sm">
-            Login
+        <div className="flex items-center space-x-3">
+          <Button variant="ghost" size="sm" className="text-sm font-medium">
+            Sign In
           </Button>
-          <Button size="sm" className="bg-gradient-hero hover:opacity-90 transition-opacity">
+          <Button size="sm" className="bg-gradient-primary hover:shadow-glow transition-all text-sm font-medium px-6">
             Get Started
           </Button>
         </div>
