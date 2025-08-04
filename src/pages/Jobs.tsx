@@ -140,15 +140,21 @@ export const Jobs = () => {
                 <div className="relative flex-1">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                   <Input 
-                    placeholder="Search jobs, companies, or skills..." 
+                    placeholder="Search jobs, companies, skills, or cities..." 
                     className="pl-10 h-12 border-border/50"
                   />
                 </div>
                 <div className="flex gap-3 flex-wrap">
-                  <Button variant="outline" size="lg" className="gap-2">
-                    <MapPin className="h-4 w-4" />
-                    Location
-                  </Button>
+                  <Select>
+                    <SelectTrigger className="w-[140px] h-12">
+                      <MapPin className="h-4 w-4 mr-2" />
+                      <SelectValue placeholder="Location" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="uk">🇬🇧 UK</SelectItem>
+                      <SelectItem value="usa">🇺🇸 USA</SelectItem>
+                    </SelectContent>
+                  </Select>
                   <Button variant="outline" size="lg" className="gap-2">
                     <Briefcase className="h-4 w-4" />
                     Job Type
