@@ -1,39 +1,40 @@
+import bnyMellonLogo from "@/assets/bny-mellon-logo.png";
+import goldmanSachsLogo from "@/assets/goldman-sachs-logo.png";
+import metaLogo from "@/assets/meta-logo.png";
+import amazonLogo from "@/assets/amazon-logo.png";
+import teslaLogo from "@/assets/tesla-logo.png";
+import appleLogo from "@/assets/apple-logo.png";
+import microsoftLogo from "@/assets/microsoft-logo.png";
+import googleLogo from "@/assets/google-logo.png";
+
 export const CompanyLogos = () => {
   const companies = [
-    { name: "BNY Mellon", logo: "💰" },
-    { name: "Goldman Sachs", logo: "🏦" },
-    { name: "Meta", logo: "📘" },
-    { name: "Amazon", logo: "📦" },
-    { name: "Tesla", logo: "⚡" },
-    { name: "Apple", logo: "🍎" },
-    { name: "Microsoft", logo: "💻" },
-    { name: "Google", logo: "🔍" },
+    { name: "BNY Mellon", logo: bnyMellonLogo },
+    { name: "Goldman Sachs", logo: goldmanSachsLogo },
+    { name: "Meta", logo: metaLogo },
+    { name: "Amazon", logo: amazonLogo },
+    { name: "Tesla", logo: teslaLogo },
+    { name: "Apple", logo: appleLogo },
+    { name: "Microsoft", logo: microsoftLogo },
+    { name: "Google", logo: googleLogo },
   ];
 
   return (
     <section className="py-16 bg-background border-y border-border/50">
       <div className="container">
-        <div className="text-center mb-12">
-          <p className="text-sm font-medium text-muted-foreground mb-2">Trusted by</p>
-          <h3 className="text-2xl font-semibold text-foreground">
-            Companies hiring visa-sponsored talent
-          </h3>
-        </div>
-        
         <div className="relative overflow-hidden">
-          <div className="flex animate-[scroll_30s_linear_infinite] gap-12 items-center">
+          <div className="flex animate-scroll gap-12 items-center">
             {/* First set of logos */}
             {companies.map((company, index) => (
               <div 
                 key={`first-${index}`}
-                className="flex flex-col items-center gap-3 min-w-[120px] group hover-scale"
+                className="flex items-center justify-center min-w-[160px] group hover-scale"
               >
-                <div className="w-16 h-16 rounded-xl bg-gradient-surface border border-border/50 flex items-center justify-center text-2xl shadow-sm group-hover:shadow-md transition-all">
-                  {company.logo}
-                </div>
-                <span className="text-sm font-medium text-muted-foreground group-hover:text-foreground transition-colors">
-                  {company.name}
-                </span>
+                <img 
+                  src={company.logo} 
+                  alt={`${company.name} logo`}
+                  className="h-12 w-auto object-contain opacity-60 group-hover:opacity-100 transition-opacity grayscale group-hover:grayscale-0"
+                />
               </div>
             ))}
             
@@ -41,14 +42,13 @@ export const CompanyLogos = () => {
             {companies.map((company, index) => (
               <div 
                 key={`second-${index}`}
-                className="flex flex-col items-center gap-3 min-w-[120px] group hover-scale"
+                className="flex items-center justify-center min-w-[160px] group hover-scale"
               >
-                <div className="w-16 h-16 rounded-xl bg-gradient-surface border border-border/50 flex items-center justify-center text-2xl shadow-sm group-hover:shadow-md transition-all">
-                  {company.logo}
-                </div>
-                <span className="text-sm font-medium text-muted-foreground group-hover:text-foreground transition-colors">
-                  {company.name}
-                </span>
+                <img 
+                  src={company.logo} 
+                  alt={`${company.name} logo`}
+                  className="h-12 w-auto object-contain opacity-60 group-hover:opacity-100 transition-opacity grayscale group-hover:grayscale-0"
+                />
               </div>
             ))}
           </div>
