@@ -1,3 +1,4 @@
+import { useState, useMemo } from "react";
 import { JobCard } from "@/components/JobCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -119,6 +120,25 @@ const allJobs = [
 ];
 
 export const Jobs = () => {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [locationFilter, setLocationFilter] = useState("");
+
+  const filteredJobs = useMemo(() => {
+    return allJobs.filter((job) => {
+      const matchesSearch = searchTerm === "" || 
+        job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        job.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        job.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        job.description.toLowerCase().includes(searchTerm.toLowerCase());
+      
+      const matchesLocation = locationFilter === "" || 
+        (locationFilter === "uk" && job.country === "UK") ||
+        (locationFilter === "usa" && job.country === "USA");
+
+      return matchesSearch && matchesLocation;
+    });
+  }, [searchTerm, locationFilter]);
+
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
@@ -142,10 +162,12 @@ export const Jobs = () => {
                   <Input 
                     placeholder="Search jobs, companies, skills, or cities..." 
                     className="pl-10 h-12 border-border/50"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
                   />
                 </div>
                 <div className="flex gap-3 flex-wrap">
-                  <Select>
+                  <Select value={locationFilter} onValueChange={setLocationFilter}>
                     <SelectTrigger className="w-[140px] h-12">
                       <MapPin className="h-4 w-4 mr-2" />
                       <SelectValue placeholder="Location" />
@@ -201,7 +223,7 @@ export const Jobs = () => {
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center gap-6">
               <div className="text-sm text-muted-foreground">
-                <span className="font-semibold text-foreground">{allJobs.length}</span> jobs found
+                <span className="font-semibold text-foreground">{filteredJobs.length}</span> jobs found
               </div>
               <div className="flex items-center gap-4">
                 <Badge variant="outline" className="gap-1">
@@ -223,7 +245,7 @@ export const Jobs = () => {
       <section className="py-12">
         <div className="container">
           <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-            {allJobs.map((job) => (
+            {filteredJobs.map((job) => (
               <JobCard key={job.id} job={job} />
             ))}
           </div>
