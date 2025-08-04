@@ -12,7 +12,7 @@ export const Header = () => {
         <Link to="/" className="flex items-center space-x-3 group">
           <div className="relative">
             <div className="h-20 w-20 rounded-xl bg-white flex items-center justify-center shadow-xl group-hover:shadow-2xl transition-all p-4 border border-border/20">
-              <img src="/lovable-uploads/4a874999-c4a8-48ef-93ba-a53c89681c31.png" alt="BleemHire" className="w-full h-full object-contain" />
+              <img src="/lovable-uploads/4c2accb2-826d-4855-a817-28242f51af13.png" alt="BleemHire" className="w-full h-full object-contain" />
             </div>
           </div>
           <span className="font-bold text-4xl bg-gradient-primary bg-clip-text text-transparent">
