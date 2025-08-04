@@ -201,7 +201,7 @@ export const Jobs = () => {
               <CardContent className="p-8 text-center">
                 <h3 className="text-xl font-semibold mb-4">Want to see more jobs?</h3>
                 <p className="text-muted-foreground mb-6">
-                  Get access to 3,000+ additional visa-sponsored positions updated daily
+                  Get access to additional visa-sponsored positions updated daily
                 </p>
                 <Button className="w-full bg-gradient-primary hover:shadow-glow transition-all">
                   Start 24hr Free Trial
