@@ -5,7 +5,7 @@ import { Check, Star, Clock } from "lucide-react";
 
 export const Pricing = () => {
   const features = [
-    "Access to 3,247+ visa-sponsored jobs",
+    "Access to 3,000+ visa-sponsored jobs",
     "Real-time job updates every hour",
     "UK & USA positions exclusively",
     "Verified employer information",
