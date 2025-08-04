@@ -11,11 +11,11 @@ export const Header = () => {
       <div className="container flex h-16 items-center justify-between">
         <Link to="/" className="flex items-center space-x-3 group">
           <div className="relative">
-            <div className="h-10 w-10 rounded-xl bg-white flex items-center justify-center shadow-glow group-hover:shadow-xl transition-all p-1">
+            <div className="h-12 w-12 rounded-xl bg-white flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all p-2 border border-border/20">
               <img src="/lovable-uploads/48260f4b-bc58-4d8f-b29e-556ddf902112.png" alt="BleemHire" className="w-full h-full object-contain" />
             </div>
           </div>
-          <span className="font-bold text-xl bg-gradient-primary bg-clip-text text-transparent">
+          <span className="font-bold text-2xl bg-gradient-primary bg-clip-text text-transparent">
             BleemHire
           </span>
         </Link>
