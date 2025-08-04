@@ -188,10 +188,6 @@ export const Jobs = () => {
                       <SelectItem value="15-plus-years">15+ years</SelectItem>
                     </SelectContent>
                   </Select>
-                  <Button variant="outline" size="lg" className="gap-2">
-                    <Filter className="h-4 w-4" />
-                    More Filters
-                  </Button>
                 </div>
               </div>
             </CardContent>
