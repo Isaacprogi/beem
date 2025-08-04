@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import { JobCard } from "@/components/JobCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -138,6 +139,7 @@ const allJobs = [
 ];
 
 export const Jobs = () => {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [locationFilter, setLocationFilter] = useState("");
 
@@ -271,7 +273,10 @@ export const Jobs = () => {
                 <p className="text-muted-foreground mb-6">
                   Get access to additional visa-sponsored positions updated daily
                 </p>
-                <Button className="w-full bg-gradient-primary hover:shadow-glow transition-all">
+                <Button 
+                  className="w-full bg-gradient-primary hover:shadow-glow transition-all"
+                  onClick={() => navigate('/signup')}
+                >
                   Start 24hr Free Trial
                 </Button>
               </CardContent>
