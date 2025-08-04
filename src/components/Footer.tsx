@@ -39,7 +39,7 @@ export const Footer = () => {
             <div className="bg-gradient-surface p-6 rounded-xl border border-border/50">
               <div className="flex items-center mb-4">
                 <img 
-                  src="https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=64&h=64&fit=crop&crop=face" 
+                  src="https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?w=64&h=64&fit=crop&crop=face" 
                   alt="Sarah Chen" 
                   className="w-12 h-12 rounded-full mr-4"
                 />
@@ -85,7 +85,7 @@ export const Footer = () => {
             <div className="bg-gradient-surface p-6 rounded-xl border border-border/50">
               <div className="flex items-center mb-4">
                 <img 
-                  src="https://images.unsplash.com/photo-1494790108755-2616b612b786?w=64&h=64&fit=crop&crop=face" 
+                  src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=64&h=64&fit=crop&crop=face" 
                   alt="Priya Patel" 
                   className="w-12 h-12 rounded-full mr-4"
                 />
