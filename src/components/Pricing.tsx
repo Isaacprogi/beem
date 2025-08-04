@@ -45,6 +45,9 @@ export const Pricing = () => {
                 <Clock className="h-4 w-4" />
                 <span>24-hour free trial • Cancel anytime</span>
               </div>
+              <p className="text-sm text-muted-foreground mt-4 max-w-sm mx-auto leading-relaxed">
+                Get full access to all features for 24 hours. Card details will be required in order to access the free trial. After the trial, you can choose to subscribe for $9.99/month.
+              </p>
             </CardHeader>
 
             <CardContent className="space-y-4 px-8">
