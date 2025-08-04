@@ -45,6 +45,14 @@ export const Header = () => {
           >
             Pricing
           </Link>
+          <Link 
+            to="/post-job" 
+            className={`text-sm font-medium transition-all hover:text-primary ${
+              isActive('/post-job') ? 'text-primary' : 'text-muted-foreground'
+            }`}
+          >
+            Post a Job
+          </Link>
         </nav>
 
         <div className="flex items-center space-x-3">
