@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, Filter, MapPin, Briefcase, GraduationCap, Clock, FileText } from "lucide-react";
+import { Search, Filter, MapPin, Briefcase, GraduationCap, Clock } from "lucide-react";
 
 const allJobs = [
   {
@@ -140,7 +140,6 @@ const allJobs = [
 export const Jobs = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [locationFilter, setLocationFilter] = useState("");
-  const [visaTypeFilter, setVisaTypeFilter] = useState("");
 
   const filteredJobs = useMemo(() => {
     return allJobs.filter((job) => {
@@ -154,12 +153,9 @@ export const Jobs = () => {
         (locationFilter === "uk" && job.country === "UK") ||
         (locationFilter === "usa" && job.country === "USA");
 
-      const matchesVisaType = visaTypeFilter === "" || visaTypeFilter === "all" ||
-        job.visaType.toLowerCase().includes(visaTypeFilter.toLowerCase());
-
-      return matchesSearch && matchesLocation && matchesVisaType;
+      return matchesSearch && matchesLocation;
     });
-  }, [searchTerm, locationFilter, visaTypeFilter]);
+  }, [searchTerm, locationFilter]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -197,20 +193,6 @@ export const Jobs = () => {
                     <SelectContent>
                       <SelectItem value="uk">🇬🇧 UK</SelectItem>
                       <SelectItem value="usa">🇺🇸 USA</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <Select value={visaTypeFilter} onValueChange={setVisaTypeFilter}>
-                    <SelectTrigger className="w-[180px] h-12">
-                      <FileText className="h-4 w-4 mr-2" />
-                      <SelectValue placeholder="Visa Type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Visa Types</SelectItem>
-                      <SelectItem value="h1-b">🌎 H-1B</SelectItem>
-                      <SelectItem value="global-usa">🌎 Global</SelectItem>
-                      <SelectItem value="green-card">🟢 Green Card</SelectItem>
-                      <SelectItem value="graduate-visa">Graduate Visa</SelectItem>
-                      <SelectItem value="tier-2">Tier 2 Skilled Worker Visa</SelectItem>
                     </SelectContent>
                   </Select>
                   <Select>
