@@ -3,7 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Search, Filter, MapPin, Briefcase } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Search, Filter, MapPin, Briefcase, GraduationCap } from "lucide-react";
 
 const allJobs = [
   {
@@ -143,7 +144,7 @@ export const Jobs = () => {
                     className="pl-10 h-12 border-border/50"
                   />
                 </div>
-                <div className="flex gap-3">
+                <div className="flex gap-3 flex-wrap">
                   <Button variant="outline" size="lg" className="gap-2">
                     <MapPin className="h-4 w-4" />
                     Location
@@ -152,6 +153,20 @@ export const Jobs = () => {
                     <Briefcase className="h-4 w-4" />
                     Job Type
                   </Button>
+                  <Select>
+                    <SelectTrigger className="w-[180px] h-12">
+                      <GraduationCap className="h-4 w-4 mr-2" />
+                      <SelectValue placeholder="Education" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="high-school">High School</SelectItem>
+                      <SelectItem value="associates">Associate's</SelectItem>
+                      <SelectItem value="bachelors">Bachelor's</SelectItem>
+                      <SelectItem value="masters">Master's</SelectItem>
+                      <SelectItem value="doctorate">Doctorate</SelectItem>
+                      <SelectItem value="other">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
                   <Button variant="outline" size="lg" className="gap-2">
                     <Filter className="h-4 w-4" />
                     More Filters
