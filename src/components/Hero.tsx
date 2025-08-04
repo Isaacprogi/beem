@@ -39,7 +39,7 @@ export const Hero = () => {
               className="bg-gradient-primary hover:shadow-glow transition-all text-lg px-8 py-6 h-auto group"
               asChild
             >
-              <Link to="/jobs">
+              <Link to="/signup">
                 Start 24hr Free Trial
                 <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
               </Link>

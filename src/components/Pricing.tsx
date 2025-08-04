@@ -2,8 +2,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Check, Star, Clock } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export const Pricing = () => {
+  const navigate = useNavigate();
   const features = [
     "Access to 3,000+ visa-sponsored jobs",
     "Real-time job updates every hour",
@@ -64,6 +66,7 @@ export const Pricing = () => {
               <Button 
                 className="w-full bg-gradient-primary hover:shadow-glow transition-all text-lg py-6 h-auto font-semibold"
                 size="lg"
+                onClick={() => navigate('/signup')}
               >
                 Start 24hr Free Trial
               </Button>
