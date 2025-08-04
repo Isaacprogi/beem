@@ -154,7 +154,7 @@ export const Jobs = () => {
         (locationFilter === "uk" && job.country === "UK") ||
         (locationFilter === "usa" && job.country === "USA");
 
-      const matchesVisaType = visaTypeFilter === "" || 
+      const matchesVisaType = visaTypeFilter === "" || visaTypeFilter === "all" ||
         job.visaType.toLowerCase().includes(visaTypeFilter.toLowerCase());
 
       return matchesSearch && matchesLocation && matchesVisaType;
@@ -205,7 +205,7 @@ export const Jobs = () => {
                       <SelectValue placeholder="Visa Type" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">All Visa Types</SelectItem>
+                      <SelectItem value="all">All Visa Types</SelectItem>
                       <SelectItem value="h1-b">🌎 H-1B</SelectItem>
                       <SelectItem value="global-usa">🌎 Global</SelectItem>
                       <SelectItem value="green-card">🟢 Green Card</SelectItem>
