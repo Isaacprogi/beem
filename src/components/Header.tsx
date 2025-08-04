@@ -8,14 +8,14 @@ export const Header = () => {
   
   return (
     <header className="sticky top-0 z-50 w-full bg-background/80 backdrop-blur-xl border-b border-border/50">
-      <div className="container flex h-32 items-center justify-between">
-        <Link to="/" className="flex items-center space-x-6 group">
+      <div className="container flex h-24 items-center justify-between">
+        <Link to="/" className="flex items-center space-x-3 group">
           <div className="relative">
-            <div className="h-32 w-32 rounded-xl bg-white flex items-center justify-center shadow-xl group-hover:shadow-2xl transition-all p-2 border border-border/20">
+            <div className="h-20 w-20 rounded-xl bg-white flex items-center justify-center shadow-xl group-hover:shadow-2xl transition-all p-4 border border-border/20">
               <img src="/lovable-uploads/4a711422-1990-46b5-95e4-eca54daa22b2.png" alt="BleemHire" className="w-full h-full object-contain" />
             </div>
           </div>
-          <span className="font-bold text-6xl bg-gradient-primary bg-clip-text text-transparent">
+          <span className="font-bold text-4xl bg-gradient-primary bg-clip-text text-transparent">
             BleemHire
           </span>
         </Link>

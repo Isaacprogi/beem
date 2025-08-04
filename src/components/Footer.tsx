@@ -4,11 +4,11 @@ export const Footer = () => {
       <div className="container py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div>
-            <div className="flex items-center space-x-6 mb-6">
-              <div className="h-36 w-36 rounded-xl bg-white flex items-center justify-center shadow-xl p-2 border border-border/20">
+            <div className="flex items-center space-x-3 mb-6">
+              <div className="h-24 w-24 rounded-xl bg-white flex items-center justify-center shadow-xl p-4 border border-border/20">
                 <img src="/lovable-uploads/4a711422-1990-46b5-95e4-eca54daa22b2.png" alt="BleemHire" className="w-full h-full object-contain" />
               </div>
-              <span className="font-bold text-7xl bg-gradient-primary bg-clip-text text-transparent">
+              <span className="font-bold text-5xl bg-gradient-primary bg-clip-text text-transparent">
                 BleemHire
               </span>
             </div>
