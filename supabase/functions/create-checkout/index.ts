@@ -24,6 +24,9 @@ serve(async (req) => {
     const user = data.user;
     if (!user?.email) throw new Error("User not authenticated or email not available");
 
+    // Get plan from request body
+    const { plan = 'monthly' } = await req.json();
+
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", { 
       apiVersion: "2023-10-16" 
     });
@@ -34,6 +37,32 @@ serve(async (req) => {
       customerId = customers.data[0].id;
     }
 
+    // Configure pricing based on plan
+    const priceConfig = plan === '6month' 
+      ? {
+          unit_amount: 4499, // $44.99
+          recurring: { 
+            interval: "month",
+            interval_count: 6,
+            trial_period_days: 1
+          },
+          product_data: {
+            name: "BleemHire Premium Access - 6 Month",
+            description: "24-hour free trial, then $44.99 every 6 months"
+          }
+        }
+      : {
+          unit_amount: 999, // $9.99
+          recurring: { 
+            interval: "month",
+            trial_period_days: 1
+          },
+          product_data: {
+            name: "BleemHire Premium Access",
+            description: "24-hour free trial, then $9.99/month"
+          }
+        };
+
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       customer_email: customerId ? undefined : user.email,
@@ -41,15 +70,7 @@ serve(async (req) => {
         {
           price_data: {
             currency: "usd",
-            product_data: { 
-              name: "JobBoard Premium Access",
-              description: "24-hour free trial, then $9.99/month"
-            },
-            unit_amount: 999, // $9.99
-            recurring: { 
-              interval: "month",
-              trial_period_days: 1 // 24-hour trial
-            },
+            ...priceConfig,
           },
           quantity: 1,
         },
