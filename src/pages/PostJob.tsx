@@ -5,8 +5,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { analytics } from "@/utils/analytics";
+import { useScrollTracking } from "@/hooks/useScrollTracking";
 
 export const PostJob = () => {
+  useScrollTracking('Post Job');
+  
   const { toast } = useToast();
   const [formData, setFormData] = useState({
     company: "",
@@ -19,6 +23,9 @@ export const PostJob = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    analytics.trackFormSubmit('post_job', true);
+    
     toast({
       title: "Job posting submitted!",
       description: "We'll review your submission and get back to you soon.",

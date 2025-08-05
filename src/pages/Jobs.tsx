@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { JobCard } from "@/components/JobCard";
 import { Button } from "@/components/ui/button";
@@ -7,6 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Search, Filter, MapPin, Briefcase, GraduationCap, Clock } from "lucide-react";
+import { analytics } from "@/utils/analytics";
+import { useScrollTracking } from "@/hooks/useScrollTracking";
 
 const allJobs = [
   {
@@ -148,6 +150,8 @@ const allJobs = [
 ];
 
 export const Jobs = () => {
+  useScrollTracking('Browse Jobs');
+  
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [locationFilter, setLocationFilter] = useState("");
@@ -169,6 +173,30 @@ export const Jobs = () => {
       return matchesSearch && matchesLocation;
     });
   }, [searchTerm, locationFilter, yearsExperienceFilter, experienceLevelFilter]);
+
+  // Track search events
+  useEffect(() => {
+    if (searchTerm.length > 2) {
+      const timeoutId = setTimeout(() => {
+        analytics.trackJobSearch(searchTerm, filteredJobs.length);
+      }, 500); // Debounce search tracking
+      
+      return () => clearTimeout(timeoutId);
+    }
+  }, [searchTerm, filteredJobs.length]);
+
+  // Track filter usage
+  useEffect(() => {
+    if (locationFilter) {
+      analytics.trackFilterUse('location', locationFilter, filteredJobs.length);
+    }
+  }, [locationFilter, filteredJobs.length]);
+
+  const handleTrialClick = () => {
+    analytics.trackTrialStart('jobs_page');
+    analytics.trackSignUpStart('jobs_page_trial');
+    navigate('/signup');
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -299,7 +327,7 @@ export const Jobs = () => {
                 </p>
                 <Button 
                   className="w-full bg-gradient-primary hover:shadow-glow transition-all"
-                  onClick={() => navigate('/signup')}
+                  onClick={handleTrialClick}
                 >
                   Start 24hr Free Trial
                 </Button>

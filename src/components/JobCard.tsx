@@ -2,6 +2,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { MapPin, Clock, DollarSign, Building2, ExternalLink } from "lucide-react";
+import { analytics } from "@/utils/analytics";
+import { useEffect, useRef } from "react";
 
 interface JobCardProps {
   job: {
@@ -24,11 +26,46 @@ interface JobCardProps {
 
 export const JobCard = ({ job }: JobCardProps) => {
   const countryFlag = job.country === "UK" ? "🇬🇧" : "🇺🇸";
+  const cardRef = useRef<HTMLDivElement>(null);
+  const viewTracked = useRef(false);
+
+  // Track job view when card comes into viewport
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !viewTracked.current) {
+          viewTracked.current = true;
+          analytics.trackJobView(job.id, job.title, job.company);
+        }
+      },
+      { threshold: 0.5 }
+    );
+
+    if (cardRef.current) {
+      observer.observe(cardRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, [job.id, job.title, job.company]);
+
+  const handleJobClick = () => {
+    analytics.trackJobClick(job.id, job.title, job.company, job.location);
+  };
+
+  const handleApplyClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    analytics.trackJobApply(job.id, job.title, job.company);
+    analytics.trackSignUpStart('job_card');
+    window.location.href = '/signup';
+  };
   
   return (
-    <Card className={`group relative overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 bg-gradient-surface border-0 ${
-      job.featured ? 'ring-2 ring-primary/20 shadow-glow' : 'shadow-md'
-    }`}>
+    <Card 
+      ref={cardRef}
+      onClick={handleJobClick}
+      className={`group relative overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 bg-gradient-surface border-0 cursor-pointer ${
+        job.featured ? 'ring-2 ring-primary/20 shadow-glow' : 'shadow-md'
+      }`}>
       {job.featured && (
         <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-primary" />
       )}
@@ -109,10 +146,7 @@ export const JobCard = ({ job }: JobCardProps) => {
         <Button 
           className="w-full bg-gradient-primary hover:shadow-glow transition-all group"
           size="sm"
-          onClick={(e) => {
-            e.preventDefault();
-            window.location.href = '/signup';
-          }}
+          onClick={handleApplyClick}
         >
           <span>View Details & Apply</span>
           <ExternalLink className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />

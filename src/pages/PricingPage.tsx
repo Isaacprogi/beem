@@ -3,8 +3,17 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Check, Users, Clock, Shield, Zap } from "lucide-react";
+import { analytics } from "@/utils/analytics";
+import { useScrollTracking } from "@/hooks/useScrollTracking";
 
 export const PricingPage = () => {
+  useScrollTracking('Pricing');
+  
+  const handleTrialClick = () => {
+    analytics.trackTrialStart('pricing_page');
+    analytics.trackSignUpStart('pricing_page_trial');
+  };
+
   const benefits = [
     {
       icon: <Users className="h-6 w-6" />,
@@ -115,6 +124,7 @@ export const PricingPage = () => {
             <Button 
               className="bg-gradient-primary hover:shadow-glow transition-all px-8"
               size="lg"
+              onClick={handleTrialClick}
             >
               Start Your 24hr Free Trial
             </Button>

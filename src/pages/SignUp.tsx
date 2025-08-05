@@ -5,8 +5,12 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
+import { analytics } from "@/utils/analytics";
+import { useScrollTracking } from "@/hooks/useScrollTracking";
 
 export const SignUp = () => {
+  useScrollTracking('Sign Up');
+  
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -31,8 +35,11 @@ export const SignUp = () => {
     e.preventDefault();
     if (!validateEmail(email)) {
       setEmailError("Please enter a valid email");
+      analytics.trackFormSubmit('sign_up', false);
       return;
     }
+    
+    analytics.trackFormSubmit('sign_up', true);
     // Handle form submission
     console.log("Form submitted", { email, password, confirmPassword });
   };
