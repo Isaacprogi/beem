@@ -1,3 +1,5 @@
+import { Linkedin, Instagram } from "lucide-react";
+
 export const Footer = () => {
   return (
     <footer className="bg-gradient-surface border-t border-border/50 mt-16">
@@ -179,6 +181,14 @@ export const Footer = () => {
             <a href="mailto:info@bleemhire.com" className="hover:text-primary transition-colors">info@bleemhire.com</a>
             <span>•</span>
             <a href="/privacy-policy" className="hover:text-primary transition-colors">Privacy Policy</a>
+          </div>
+          <div className="flex items-center justify-center gap-4 mt-4">
+            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
+              <Linkedin size={20} />
+            </a>
+            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
+              <Instagram size={20} />
+            </a>
           </div>
         </div>
       </div>
