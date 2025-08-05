@@ -291,7 +291,7 @@ export const Jobs = () => {
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center gap-6">
               <div className="text-sm text-muted-foreground">
-                <span className="font-semibold text-foreground">{filteredJobs.length}</span> jobs found
+                <span className="font-semibold text-foreground">250,000</span> jobs found
               </div>
               <div className="flex items-center gap-4">
                 <Badge variant="outline" className="gap-1">
