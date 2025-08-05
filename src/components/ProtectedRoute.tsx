@@ -21,6 +21,7 @@ const ProtectedRoute = ({ children, requireSubscription = false }: ProtectedRout
       
       if (requireSubscription && !subscriptionStatus.subscribed) {
         window.open('https://buy.stripe.com/aFa28k6qfdqf7EX0KFcMM00', '_blank');
+        navigate("/"); // Redirect to home page instead of staying on protected route
         return;
       }
     }
