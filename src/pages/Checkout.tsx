@@ -2,39 +2,19 @@ import React, { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
-import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
 
 export default function Checkout() {
   const [selectedPlan, setSelectedPlan] = useState('monthly');
-  const [loading, setLoading] = useState(false);
   const { user } = useAuth();
 
-  const handleStartTrial = async () => {
+  const handleStartTrial = () => {
     if (!user) {
-      toast.error('Please sign in to start your free trial');
+      alert('Please sign in to start your free trial');
       return;
     }
 
-    setLoading(true);
-    try {
-      const { data, error } = await supabase.functions.invoke('create-checkout', {
-        body: { plan: selectedPlan },
-        headers: {
-          Authorization: `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`,
-        },
-      });
-
-      if (error) throw error;
-      
-      // Redirect to Stripe Checkout
-      window.location.href = data.url;
-    } catch (error: any) {
-      console.error('Checkout error:', error);
-      toast.error('Failed to start checkout. Please try again.');
-    } finally {
-      setLoading(false);
-    }
+    // Redirect directly to Stripe Payment Link
+    window.location.href = 'https://buy.stripe.com/aFa28k6qfdqf7EX0KFcMM00';
   };
 
   return (
@@ -168,11 +148,10 @@ export default function Checkout() {
                       
                       <Button 
                         onClick={handleStartTrial}
-                        disabled={loading}
                         className="w-full"
                         size="lg"
                       >
-                        {loading ? 'Starting Trial...' : 'Start Free Trial'}
+                        Start Free Trial
                       </Button>
                     </div>
                   </div>
