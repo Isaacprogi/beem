@@ -11,7 +11,7 @@ export default function Checkout() {
       return;
     }
 
-    // Redirect directly to Stripe Payment Link
+    // Direct redirect to the correct Stripe Payment Link
     window.location.href = 'https://buy.stripe.com/aFa28k6qfdqf7EX0KFcMM00';
   };
 
@@ -103,7 +103,7 @@ export default function Checkout() {
                         className="w-full"
                         size="lg"
                       >
-                        Start Free Trial
+                        Start Free Trial - Go to Stripe
                       </Button>
                     </div>
                   </div>
