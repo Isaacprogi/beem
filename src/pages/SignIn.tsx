@@ -111,6 +111,11 @@ export const SignIn = () => {
             
             <div className="mt-6 text-center space-y-2">
               <p className="text-sm text-muted-foreground">
+                <Link to="/forgot-password" className="text-primary hover:underline font-medium">
+                  Forgot your password?
+                </Link>
+              </p>
+              <p className="text-sm text-muted-foreground">
                 Don't have an account?{" "}
                 <Link to="/signup" className="text-primary hover:underline font-medium">
                   Sign up

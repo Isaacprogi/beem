@@ -11,6 +11,8 @@ import { PricingPage } from "./pages/PricingPage";
 import { PostJob } from "./pages/PostJob";
 import { SignUp } from "./pages/SignUp";
 import { SignIn } from "./pages/SignIn";
+import { ForgotPassword } from "./pages/ForgotPassword";
+import { ResetPassword } from "./pages/ResetPassword";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import NotFound from "./pages/NotFound";
 
@@ -27,6 +29,8 @@ const AppContent = () => {
           <Route path="/post-job" element={<PostJob />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/sign-in" element={<SignIn />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
