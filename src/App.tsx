@@ -9,7 +9,7 @@ import Index from "./pages/Index";
 import { Jobs } from "./pages/Jobs";
 import { PricingPage } from "./pages/PricingPage";
 import { PostJob } from "./pages/PostJob";
-import Checkout from "./pages/Checkout";
+
 import ProtectedRoute from "./components/ProtectedRoute";
 import { SignUp } from "./pages/SignUp";
 import { SignIn } from "./pages/SignIn";
@@ -35,11 +35,6 @@ const AppContent = () => {
           <Route path="/post-job" element={
             <ProtectedRoute>
               <PostJob />
-            </ProtectedRoute>
-          } />
-          <Route path="/checkout" element={
-            <ProtectedRoute>
-              <Checkout />
             </ProtectedRoute>
           } />
           <Route path="/signup" element={<SignUp />} />
