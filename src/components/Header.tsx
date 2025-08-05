@@ -1,9 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { Link, useLocation } from "react-router-dom";
 import { analytics } from "@/utils/analytics";
+import { useAuth } from "@/contexts/AuthContext";
 
 export const Header = () => {
   const location = useLocation();
+  const { user, signOut, loading } = useAuth();
   
   const isActive = (path: string) => location.pathname === path;
 
@@ -69,16 +71,40 @@ export const Header = () => {
         </nav>
 
         <div className="flex items-center space-x-3">
-          <Button variant="ghost" size="sm" className="text-sm font-medium">
-            Sign In
-          </Button>
-          <Button 
-            size="sm" 
-            className="bg-gradient-primary hover:shadow-glow transition-all text-sm font-medium px-6" 
-            asChild
-          >
-            <Link to="/signup" onClick={handleGetStartedClick}>Get Started</Link>
-          </Button>
+          {user ? (
+            <>
+              <span className="text-sm text-muted-foreground">
+                Welcome, {user.user_metadata?.display_name || user.email}
+              </span>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="text-sm font-medium"
+                onClick={signOut}
+                disabled={loading}
+              >
+                Sign Out
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="text-sm font-medium"
+                asChild
+              >
+                <Link to="/sign-in">Sign In</Link>
+              </Button>
+              <Button 
+                size="sm" 
+                className="bg-gradient-primary hover:shadow-glow transition-all text-sm font-medium px-6" 
+                asChild
+              >
+                <Link to="/signup" onClick={handleGetStartedClick}>Get Started</Link>
+              </Button>
+            </>
+          )}
         </div>
       </div>
     </header>

@@ -168,4 +168,42 @@ export const analytics = {
       });
     }
   },
+
+  // Authentication events
+  trackSignUp: (email: string) => {
+    if (typeof window !== 'undefined' && window.gtag) {
+      window.gtag('event', 'sign_up', {
+        method: 'email',
+        custom_email: email,
+      });
+    }
+  },
+
+  trackSignInAttempt: () => {
+    if (typeof window !== 'undefined' && window.gtag) {
+      window.gtag('event', 'login_attempt', {
+        method: 'email',
+      });
+    }
+  },
+
+  trackSignInSuccess: () => {
+    if (typeof window !== 'undefined' && window.gtag) {
+      window.gtag('event', 'login', {
+        method: 'email',
+      });
+    }
+  },
+
+  // Job posting events
+  trackJobPost: (company: string, role: string) => {
+    if (typeof window !== 'undefined' && window.gtag) {
+      window.gtag('event', 'job_post', {
+        event_category: 'job',
+        event_label: `${company} - ${role}`,
+        custom_company: company,
+        custom_role: role,
+      });
+    }
+  },
 };

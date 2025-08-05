@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -7,11 +8,15 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { analytics } from "@/utils/analytics";
 import { useScrollTracking } from "@/hooks/useScrollTracking";
+import { useAuth } from "@/contexts/AuthContext";
 
 export const PostJob = () => {
   useScrollTracking('Post Job');
   
   const { toast } = useToast();
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  
   const [formData, setFormData] = useState({
     company: "",
     firstName: "",
@@ -21,9 +26,26 @@ export const PostJob = () => {
     applicationLink: ""
   });
 
+  useEffect(() => {
+    if (!user) {
+      toast({
+        title: "Authentication Required",
+        description: "Please sign in to post a job.",
+        variant: "destructive",
+      });
+      navigate('/sign-in');
+    }
+  }, [user, navigate]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
+    if (!user) {
+      navigate('/sign-in');
+      return;
+    }
+    
+    analytics.trackJobPost(formData.company, formData.role);
     analytics.trackFormSubmit('post_job', true);
     
     toast({
@@ -35,6 +57,10 @@ export const PostJob = () => {
   const handleChange = (field: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData(prev => ({ ...prev, [field]: e.target.value }));
   };
+
+  if (!user) {
+    return null; // Show nothing while redirecting
+  }
 
   return (
     <div className="min-h-screen bg-background">

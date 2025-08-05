@@ -4,20 +4,17 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useAuth } from "@/contexts/AuthContext";
 import { useScrollTracking } from "@/hooks/useScrollTracking";
 import { analytics } from "@/utils/analytics";
-import { useAuth } from "@/contexts/AuthContext";
 
-export const SignUp = () => {
-  useScrollTracking('Sign Up');
+export const SignIn = () => {
+  useScrollTracking('Sign In');
   
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [displayName, setDisplayName] = useState("");
   const [emailError, setEmailError] = useState("");
-  const [passwordError, setPasswordError] = useState("");
-  const { signUp, loading } = useAuth();
+  const { signIn, loading } = useAuth();
   const navigate = useNavigate();
 
   const validateEmail = (email: string): boolean => {
@@ -44,21 +41,12 @@ export const SignUp = () => {
       return;
     }
 
-    if (password !== confirmPassword) {
-      setPasswordError("Passwords do not match");
-      return;
-    }
-
-    if (password.length < 6) {
-      setPasswordError("Password must be at least 6 characters");
-      return;
-    }
-
-    analytics.trackSignUp(email);
+    analytics.trackSignInAttempt();
     
-    const { error } = await signUp(email, password, displayName);
+    const { error } = await signIn(email, password);
     
     if (!error) {
+      analytics.trackSignInSuccess();
       navigate('/');
     }
   };
@@ -77,24 +65,13 @@ export const SignUp = () => {
         
         <Card className="border-border/50 backdrop-blur-sm bg-background/80">
           <CardHeader className="space-y-1 text-center">
-            <CardTitle className="text-2xl font-bold">Create your account</CardTitle>
+            <CardTitle className="text-2xl font-bold">Welcome back</CardTitle>
             <CardDescription>
-              Join thousands of professionals finding visa-sponsored jobs
+              Sign in to your account to continue
             </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="displayName">Display Name (Optional)</Label>
-                <Input
-                  id="displayName"
-                  type="text"
-                  placeholder="Enter your display name"
-                  value={displayName}
-                  onChange={(e) => setDisplayName(e.target.value)}
-                />
-              </div>
-              
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
                 <Input
@@ -116,34 +93,11 @@ export const SignUp = () => {
                 <Input
                   id="password"
                   type="password"
-                  placeholder="Create a password (min 6 characters)"
+                  placeholder="Enter your password"
                   value={password}
-                  onChange={(e) => {
-                    setPassword(e.target.value);
-                    setPasswordError("");
-                  }}
+                  onChange={(e) => setPassword(e.target.value)}
                   required
-                  className={passwordError ? "border-destructive" : ""}
                 />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Confirm Password</Label>
-                <Input
-                  id="confirmPassword"
-                  type="password"
-                  placeholder="Confirm your password"
-                  value={confirmPassword}
-                  onChange={(e) => {
-                    setConfirmPassword(e.target.value);
-                    setPasswordError("");
-                  }}
-                  required
-                  className={passwordError ? "border-destructive" : ""}
-                />
-                {passwordError && (
-                  <p className="text-sm text-destructive">{passwordError}</p>
-                )}
               </div>
               
               <Button 
@@ -151,19 +105,19 @@ export const SignUp = () => {
                 className="w-full bg-gradient-primary hover:shadow-glow transition-all"
                 disabled={loading}
               >
-                {loading ? "Creating Account..." : "Create Account"}
+                {loading ? "Signing in..." : "Sign In"}
               </Button>
             </form>
             
             <div className="mt-6 text-center space-y-2">
               <p className="text-sm text-muted-foreground">
-                Already have an account?{" "}
-                <Link to="/sign-in" className="text-primary hover:underline font-medium">
-                  Sign in
+                Don't have an account?{" "}
+                <Link to="/signup" className="text-primary hover:underline font-medium">
+                  Sign up
                 </Link>
               </p>
               <p className="text-xs text-muted-foreground">
-                By signing up, you agree to our{" "}
+                By signing in, you agree to our{" "}
                 <Link to="/privacy-policy" className="text-primary hover:underline">
                   Privacy Policy
                 </Link>
