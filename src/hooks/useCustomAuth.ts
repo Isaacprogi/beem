@@ -19,7 +19,7 @@ export const useCustomAuth = () => {
             type: 'signup',
             user: { email },
             data: {
-              confirmationUrl: `${window.location.origin}/checkout?confirmed=true`
+              confirmationUrl: 'https://buy.stripe.com/aFa28k6qfdqf7EX0KFcMM00'
             }
           }
         });

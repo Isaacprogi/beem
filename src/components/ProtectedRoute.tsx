@@ -20,7 +20,7 @@ const ProtectedRoute = ({ children, requireSubscription = false }: ProtectedRout
       }
       
       if (requireSubscription && !subscriptionStatus.subscribed) {
-        navigate(`/checkout?v=${Date.now()}`);
+        window.open('https://buy.stripe.com/aFa28k6qfdqf7EX0KFcMM00', '_blank');
         return;
       }
     }
