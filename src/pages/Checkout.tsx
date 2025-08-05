@@ -16,7 +16,11 @@ export default function Checkout() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
+    <>
+      <meta httpEquiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+      <meta httpEquiv="Pragma" content="no-cache" />
+      <meta httpEquiv="Expires" content="0" />
+      <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-6xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-8 min-h-[80vh]">
@@ -129,5 +133,6 @@ export default function Checkout() {
         </div>
       </div>
     </div>
+    </>
   );
 }

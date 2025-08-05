@@ -20,7 +20,7 @@ const ProtectedRoute = ({ children, requireSubscription = false }: ProtectedRout
       }
       
       if (requireSubscription && !subscriptionStatus.subscribed) {
-        navigate("/checkout");
+        navigate(`/checkout?v=${Date.now()}`);
         return;
       }
     }
