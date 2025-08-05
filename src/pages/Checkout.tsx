@@ -1,33 +1,18 @@
-import React, { useState } from 'react';
-import { Badge } from '@/components/ui/badge';
+import React from 'react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
-import { supabase } from '@/integrations/supabase/client';
 
 export default function Checkout() {
-  const [selectedPlan, setSelectedPlan] = useState('monthly');
   const { user } = useAuth();
 
-  const handleStartTrial = async () => {
+  const handleStartTrial = () => {
     if (!user) {
       alert('Please sign in to start your free trial');
       return;
     }
 
-    try {
-      const { data, error } = await supabase.functions.invoke('create-checkout', {
-        body: { plan: selectedPlan }
-      });
-
-      if (error) throw error;
-
-      if (data?.url) {
-        window.location.href = data.url;
-      }
-    } catch (error) {
-      console.error('Error creating checkout session:', error);
-      alert('Failed to start trial. Please try again.');
-    }
+    // Redirect directly to Stripe Payment Link
+    window.location.href = 'https://buy.stripe.com/aFa28k6qfdqf7EX0KFcMM00';
   };
 
   return (
@@ -43,73 +28,25 @@ export default function Checkout() {
                     Subscribe to BleemHire
                   </h1>
                   <p className="text-3xl font-bold text-foreground">
-                    US${selectedPlan === 'monthly' ? '9.99' : '44.99'} 
+                    US$9.99 
                     <span className="text-lg font-normal text-muted-foreground">
-                      {selectedPlan === 'monthly' ? ' per month' : ' every 6 months'}
+                      per month
                     </span>
                   </p>
                 </div>
 
                 <div className="space-y-3">
-                  <div 
-                    className={`p-4 border rounded-lg cursor-pointer transition-colors ${
-                      selectedPlan === 'monthly' 
-                        ? 'border-primary bg-primary/5' 
-                        : 'border-border hover:border-muted-foreground'
-                    }`}
-                    onClick={() => setSelectedPlan('monthly')}
-                  >
+                  <div className="p-4 border border-primary bg-primary/5 rounded-lg">
                     <div className="flex items-center space-x-3">
-                      <div className={`w-4 h-4 rounded-full border-2 ${
-                        selectedPlan === 'monthly' 
-                          ? 'border-primary bg-primary' 
-                          : 'border-muted-foreground'
-                      }`}>
-                        {selectedPlan === 'monthly' && (
-                          <div className="w-2 h-2 bg-background rounded-full m-0.5"></div>
-                        )}
+                      <div className="w-4 h-4 rounded-full border-2 border-primary bg-primary">
+                        <div className="w-2 h-2 bg-background rounded-full m-0.5"></div>
                       </div>
                       <div className="flex-1">
-                        <div className="font-medium text-foreground">BleemHire</div>
+                        <div className="font-medium text-foreground">BleemHire Premium</div>
                         <div className="text-sm text-muted-foreground">Cancel anytime. Billed monthly</div>
                       </div>
                       <div className="text-right">
                         <div className="font-semibold text-foreground">US$9.99</div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div 
-                    className={`p-4 border rounded-lg cursor-pointer transition-colors relative ${
-                      selectedPlan === '6month' 
-                        ? 'border-primary bg-primary/5' 
-                        : 'border-border hover:border-muted-foreground'
-                    }`}
-                    onClick={() => setSelectedPlan('6month')}
-                  >
-                    <Badge 
-                      variant="secondary" 
-                      className="absolute -top-2 left-4 bg-primary text-primary-foreground"
-                    >
-                      Save US$15
-                    </Badge>
-                    <div className="flex items-center space-x-3">
-                      <div className={`w-4 h-4 rounded-full border-2 ${
-                        selectedPlan === '6month' 
-                          ? 'border-primary bg-primary' 
-                          : 'border-muted-foreground'
-                      }`}>
-                        {selectedPlan === '6month' && (
-                          <div className="w-2 h-2 bg-background rounded-full m-0.5"></div>
-                        )}
-                      </div>
-                      <div className="flex-1">
-                        <div className="font-medium text-foreground">Save US$15 with 6-month billing</div>
-                        <div className="text-sm text-muted-foreground">Billed every 6 months</div>
-                      </div>
-                      <div className="text-right">
-                        <div className="font-semibold text-foreground">US$44.99</div>
-                        <div className="text-sm text-muted-foreground">every 6 months</div>
                       </div>
                     </div>
                   </div>
@@ -118,16 +55,14 @@ export default function Checkout() {
                 <div className="border-t pt-4 space-y-2">
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground">Subtotal</span>
-                    <span className="text-foreground">
-                      {selectedPlan === 'monthly' ? 'US$9.99' : 'US$44.99'}
-                    </span>
+                    <span className="text-foreground">US$9.99</span>
                   </div>
                   <div className="flex justify-between font-semibold">
                     <span className="text-foreground">Total due today</span>
                     <span className="text-foreground">US$0.00</span>
                   </div>
                   <p className="text-xs text-muted-foreground mt-2">
-                    24-hour free trial, then {selectedPlan === 'monthly' ? 'US$9.99/month' : 'US$44.99 every 6 months'}
+                    24-hour free trial, then US$9.99/month
                   </p>
                 </div>
               </div>
@@ -141,7 +76,7 @@ export default function Checkout() {
                     Start Your Free Trial
                   </h2>
                   <p className="text-muted-foreground text-sm">
-                    24-hour free trial, then {selectedPlan === 'monthly' ? 'US$9.99/month' : 'US$44.99 every 6 months'}
+                    24-hour free trial, then US$9.99/month
                   </p>
                 </div>
 

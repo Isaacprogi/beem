@@ -2,36 +2,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Check, Star, Clock } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
-import { supabase } from "@/integrations/supabase/client";
 
 
 export const Pricing = () => {
-  const { user } = useAuth();
-
-  const handleTrialClick = async () => {
-    if (!user) {
-      // Redirect to signup if not logged in
-      window.location.href = '/sign-up';
-      return;
-    }
-
-    try {
-      const { data, error } = await supabase.functions.invoke('create-checkout', {
-        body: { plan: 'monthly' }
-      });
-
-      if (error) throw error;
-
-      if (data?.url) {
-        window.location.href = data.url;
-      }
-    } catch (error) {
-      console.error('Error creating checkout session:', error);
-      alert('Failed to start trial. Please try again.');
-    }
-  };
-
   const features = [
     "Access to 3,000+ visa-sponsored jobs",
     "Real-time job updates every hour",
@@ -92,7 +65,7 @@ export const Pricing = () => {
               <Button 
                 className="w-full bg-gradient-primary hover:shadow-glow transition-all text-lg py-6 h-auto font-semibold"
                 size="lg"
-                onClick={handleTrialClick}
+                onClick={() => window.location.href = 'https://buy.stripe.com/aFa28k6qfdqf7EX0KFcMM00'}
               >
                 Start 24hr Free Trial
               </Button>
