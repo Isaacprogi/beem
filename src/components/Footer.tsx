@@ -183,7 +183,7 @@ export const Footer = () => {
             <a href="/privacy-policy" className="hover:text-primary transition-colors">Privacy Policy</a>
           </div>
           <div className="flex items-center justify-center gap-4 mt-4">
-            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
+            <a href="https://www.linkedin.com/company/bleemhire/" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
               <Linkedin size={20} />
             </a>
             <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
