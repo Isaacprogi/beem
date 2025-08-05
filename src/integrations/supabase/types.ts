@@ -14,7 +14,99 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      jobs: {
+        Row: {
+          application_email: string | null
+          application_url: string | null
+          benefits: string | null
+          company: string
+          created_at: string
+          description: string
+          expires_at: string | null
+          featured: boolean
+          id: string
+          is_active: boolean
+          location: string
+          requirements: string | null
+          salary_range: string | null
+          title: string
+          type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          application_email?: string | null
+          application_url?: string | null
+          benefits?: string | null
+          company: string
+          created_at?: string
+          description: string
+          expires_at?: string | null
+          featured?: boolean
+          id?: string
+          is_active?: boolean
+          location: string
+          requirements?: string | null
+          salary_range?: string | null
+          title: string
+          type: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          application_email?: string | null
+          application_url?: string | null
+          benefits?: string | null
+          company?: string
+          created_at?: string
+          description?: string
+          expires_at?: string | null
+          featured?: boolean
+          id?: string
+          is_active?: boolean
+          location?: string
+          requirements?: string | null
+          salary_range?: string | null
+          title?: string
+          type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          company_name: string | null
+          created_at: string
+          display_name: string | null
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          company_name?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          company_name?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
