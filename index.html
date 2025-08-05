@@ -52,5 +52,16 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    
+    <!-- Force correct title to override any third-party script interference -->
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        document.title = 'BleemHire';
+        // Also set it after a short delay to override any async script changes
+        setTimeout(function() {
+          document.title = 'BleemHire';
+        }, 100);
+      });
+    </script>
   </body>
 </html>
