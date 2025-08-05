@@ -1,15 +1,41 @@
 import React, { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
-import { loadStripe } from '@stripe/stripe-js';
-import { Elements } from '@stripe/react-stripe-js';
-import CheckoutForm from '@/components/CheckoutForm';
-
-const stripePromise = loadStripe('pk_test_51QgSnoJWxVNz1KYZXqg8aMHlv7xOnyEBm78HG6SJ8Bb77Vm2k3C2Gx9yIf0fMW6XbRJXfZlP2PsQmk9xhiuZ9iYA006b8VKLRO');
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 export default function Checkout() {
   const [selectedPlan, setSelectedPlan] = useState('monthly');
+  const [loading, setLoading] = useState(false);
   const { user } = useAuth();
+
+  const handleStartTrial = async () => {
+    if (!user) {
+      toast.error('Please sign in to start your free trial');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('create-checkout', {
+        body: { plan: selectedPlan },
+        headers: {
+          Authorization: `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`,
+        },
+      });
+
+      if (error) throw error;
+      
+      // Redirect to Stripe Checkout
+      window.location.href = data.url;
+    } catch (error: any) {
+      console.error('Checkout error:', error);
+      toast.error('Failed to start checkout. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
@@ -114,33 +140,50 @@ export default function Checkout() {
               </div>
             </div>
 
-            {/* Right Side - Payment Form */}
+            {/* Right Side - Start Trial */}
             <div className="bg-card rounded-lg p-8 shadow-sm border">
               <div className="space-y-6">
                 <div>
                   <h2 className="text-xl font-semibold text-foreground mb-2">
-                    Payment Details
+                    Start Your Free Trial
                   </h2>
                   <p className="text-muted-foreground text-sm">
-                    Secure payment powered by Stripe. 24-hour free trial included.
+                    24-hour free trial, then {selectedPlan === 'monthly' ? 'US$9.99/month' : 'US$44.99 every 6 months'}
                   </p>
                 </div>
 
                 {user ? (
-                  <Elements stripe={stripePromise}>
-                    <CheckoutForm selectedPlan={selectedPlan} />
-                  </Elements>
+                  <div className="space-y-6">
+                    <div className="space-y-4">
+                      <div className="bg-muted/30 p-4 rounded-lg">
+                        <h3 className="font-medium text-foreground mb-2">What you get:</h3>
+                        <ul className="text-sm text-muted-foreground space-y-1">
+                          <li>• 24-hour free trial</li>
+                          <li>• Access to premium job listings</li>
+                          <li>• Advanced filtering options</li>
+                          <li>• Priority support</li>
+                          <li>• Cancel anytime</li>
+                        </ul>
+                      </div>
+                      
+                      <Button 
+                        onClick={handleStartTrial}
+                        disabled={loading}
+                        className="w-full"
+                        size="lg"
+                      >
+                        {loading ? 'Starting Trial...' : 'Start Free Trial'}
+                      </Button>
+                    </div>
+                  </div>
                 ) : (
                   <div className="text-center py-8">
                     <p className="text-muted-foreground mb-4">
-                      Please sign in to continue with checkout
+                      Please sign in to start your free trial
                     </p>
-                    <a 
-                      href="/sign-in" 
-                      className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
-                    >
-                      Sign In
-                    </a>
+                    <Button asChild>
+                      <a href="/sign-in">Sign In</a>
+                    </Button>
                   </div>
                 )}
 
