@@ -178,7 +178,7 @@ export const Footer = () => {
           <div className="flex items-center justify-center gap-4">
             <a href="mailto:info@bleemhire.com" className="hover:text-primary transition-colors">info@bleemhire.com</a>
             <span>•</span>
-            <a href="#" className="hover:text-primary transition-colors">Privacy Policy</a>
+            <a href="/privacy-policy" className="hover:text-primary transition-colors">Privacy Policy</a>
           </div>
         </div>
       </div>
