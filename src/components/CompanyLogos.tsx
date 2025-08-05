@@ -1,11 +1,11 @@
-import bnyMellonLogo from "@/assets/bny-mellon-logo.png";
-import goldmanSachsLogo from "@/assets/goldman-sachs-logo.png";
-import metaLogo from "@/assets/meta-logo.png";
-import amazonLogo from "@/assets/amazon-logo.png";
-import teslaLogo from "@/assets/tesla-logo.png";
-import appleLogo from "@/assets/apple-logo.png";
-import microsoftLogo from "@/assets/microsoft-logo.png";
-import googleLogo from "@/assets/google-logo.png";
+import bnyMellonLogo from "@/assets/bny-mellon-logo-new.png";
+import goldmanSachsLogo from "@/assets/goldman-sachs-logo-new.png";
+import metaLogo from "@/assets/meta-logo-new.png";
+import amazonLogo from "@/assets/amazon-logo-new.png";
+import teslaLogo from "@/assets/tesla-logo-new.png";
+import appleLogo from "@/assets/apple-logo-new.png";
+import microsoftLogo from "@/assets/microsoft-logo-new.png";
+import googleLogo from "@/assets/google-logo-new.png";
 
 export const CompanyLogos = () => {
   const companies = [

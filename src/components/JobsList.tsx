@@ -1,5 +1,11 @@
 import { JobCard } from "./JobCard";
 import { Button } from "@/components/ui/button";
+import googleLogo from "@/assets/google-logo-new.png";
+import microsoftLogo from "@/assets/microsoft-logo-new.png";
+import amazonLogo from "@/assets/amazon-logo-new.png";
+import teslaLogo from "@/assets/tesla-logo-new.png";
+import appleLogo from "@/assets/apple-logo-new.png";
+import metaLogo from "@/assets/meta-logo-new.png";
 
 const mockJobs = [
   {
@@ -13,7 +19,7 @@ const mockJobs = [
     posted: "2 hours ago",
     visaType: "Tier 2 Visa",
     description: "We're looking for an experienced software engineer to join our growing team. You'll work on cutting-edge projects and help build scalable solutions.",
-    logo: "/src/assets/google-logo.png",
+    logo: googleLogo,
     tags: ["Senior Associate", "Full-time", "Bachelor's", "5+ Years"]
   },
   {
@@ -27,7 +33,7 @@ const mockJobs = [
     posted: "4 hours ago",
     visaType: "H1-B Visa",
     description: "Join our data science team to develop machine learning models and extract insights from large datasets.",
-    logo: "/src/assets/microsoft-logo.png",
+    logo: microsoftLogo,
     tags: ["Associate", "Full-time", "Master's", "Python"]
   },
   {
@@ -41,7 +47,7 @@ const mockJobs = [
     posted: "6 hours ago",
     visaType: "Skilled Worker Visa",
     description: "Lead product development and strategy for our innovative B2B platform. Experience with agile methodologies required.",
-    logo: "/src/assets/amazon-logo.png",
+    logo: amazonLogo,
     tags: ["Senior Associate", "Full-time", "Bachelor's", "Management"]
   },
   {
@@ -55,7 +61,7 @@ const mockJobs = [
     posted: "8 hours ago",
     visaType: "O-1 Visa",
     description: "Design and maintain cloud infrastructure, automate deployment processes, and ensure system reliability.",
-    logo: "/src/assets/tesla-logo.png",
+    logo: teslaLogo,
     tags: ["Associate", "Full-time", "Bachelor's", "DevOps"]
   },
   {
@@ -69,7 +75,7 @@ const mockJobs = [
     posted: "1 day ago",
     visaType: "Tier 2 Visa",
     description: "Create intuitive user experiences for our digital products. Portfolio of mobile and web designs required.",
-    logo: "/src/assets/apple-logo.png",
+    logo: appleLogo,
     tags: ["Associate", "Full-time", "Bachelor's", "Design"]
   },
   {
@@ -83,7 +89,7 @@ const mockJobs = [
     posted: "1 day ago",
     visaType: "H1-B Visa",
     description: "Build and deploy ML models at scale. Experience with TensorFlow, PyTorch, and cloud platforms required.",
-    logo: "/src/assets/meta-logo.png",
+    logo: metaLogo,
     tags: ["Senior Associate", "Full-time", "Master's", "AI/ML"]
   },
 ];
