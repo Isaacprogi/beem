@@ -1,40 +1,15 @@
 import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { loadStripe } from '@stripe/stripe-js';
+import { Elements } from '@stripe/react-stripe-js';
+import CheckoutForm from '@/components/CheckoutForm';
+
+const stripePromise = loadStripe('pk_test_51QgSnoJWxVNz1KYZXqg8aMHlv7xOnyEBm78HG6SJ8Bb77Vm2k3C2Gx9yIf0fMW6XbRJXfZlP2PsQmk9xhiuZ9iYA006b8VKLRO');
 
 export default function Checkout() {
-  const [loading, setLoading] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState('monthly');
   const { user } = useAuth();
-
-  const handleStartTrial = async () => {
-    if (!user) {
-      window.location.href = '/sign-in';
-      return;
-    }
-
-    try {
-      setLoading(true);
-      const { data, error } = await supabase.functions.invoke('create-checkout', {
-        body: { plan: selectedPlan },
-        headers: {
-          Authorization: `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`,
-        },
-      });
-
-      if (error) throw error;
-
-      // Redirect to Stripe checkout
-      window.location.href = data.url;
-    } catch (error) {
-      console.error('Error creating checkout session:', error);
-      alert('Error starting checkout. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
@@ -139,40 +114,39 @@ export default function Checkout() {
               </div>
             </div>
 
-            {/* Right Side - Action */}
-            <div className="bg-card rounded-lg p-8 shadow-sm border flex flex-col justify-center">
-              <div className="max-w-md mx-auto w-full space-y-6">
-                <div className="text-center">
+            {/* Right Side - Payment Form */}
+            <div className="bg-card rounded-lg p-8 shadow-sm border">
+              <div className="space-y-6">
+                <div>
                   <h2 className="text-xl font-semibold text-foreground mb-2">
-                    Start Your Free Trial
+                    Payment Details
                   </h2>
-                  <p className="text-muted-foreground">
-                    Get 24 hours free access to all premium features. 
-                    No payment required during trial period.
+                  <p className="text-muted-foreground text-sm">
+                    Secure payment powered by Stripe. 24-hour free trial included.
                   </p>
                 </div>
 
-                <Button 
-                  onClick={handleStartTrial}
-                  disabled={loading || !user}
-                  className="w-full h-12 text-lg font-medium"
-                  size="lg"
-                >
-                  {loading ? 'Setting up...' : 'Start Free Trial'}
-                </Button>
-
-                {!user && (
-                  <p className="text-center text-sm text-muted-foreground">
-                    Please <a href="/sign-in" className="text-primary hover:underline">sign in</a> to continue
-                  </p>
+                {user ? (
+                  <Elements stripe={stripePromise}>
+                    <CheckoutForm selectedPlan={selectedPlan} />
+                  </Elements>
+                ) : (
+                  <div className="text-center py-8">
+                    <p className="text-muted-foreground mb-4">
+                      Please sign in to continue with checkout
+                    </p>
+                    <a 
+                      href="/sign-in" 
+                      className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
+                    >
+                      Sign In
+                    </a>
+                  </div>
                 )}
 
-                <div className="text-center text-xs text-muted-foreground space-y-1">
+                <div className="text-center text-xs text-muted-foreground space-y-1 pt-4 border-t">
                   <p>
-                    By subscribing, you authorize BleemHire to charge your payment method at the current rate.
-                  </p>
-                  <p>
-                    You may cancel at any time via your account settings or by contacting support.
+                    By subscribing, you authorize BleemHire to charge your payment method.
                   </p>
                   <p>
                     Read our <a href="/terms" className="text-primary hover:underline">Terms</a> and{' '}
