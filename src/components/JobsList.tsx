@@ -13,6 +13,7 @@ const mockJobs = [
     posted: "2 hours ago",
     visaType: "Tier 2 Visa",
     description: "We're looking for an experienced software engineer to join our growing team. You'll work on cutting-edge projects and help build scalable solutions.",
+    logo: "/src/assets/google-logo.png",
   },
   {
     id: "2",
@@ -25,6 +26,7 @@ const mockJobs = [
     posted: "4 hours ago",
     visaType: "H1-B Visa",
     description: "Join our data science team to develop machine learning models and extract insights from large datasets.",
+    logo: "/src/assets/microsoft-logo.png",
   },
   {
     id: "3",
@@ -37,6 +39,7 @@ const mockJobs = [
     posted: "6 hours ago",
     visaType: "Skilled Worker Visa",
     description: "Lead product development and strategy for our innovative B2B platform. Experience with agile methodologies required.",
+    logo: "/src/assets/amazon-logo.png",
   },
   {
     id: "4",
@@ -49,6 +52,7 @@ const mockJobs = [
     posted: "8 hours ago",
     visaType: "O-1 Visa",
     description: "Design and maintain cloud infrastructure, automate deployment processes, and ensure system reliability.",
+    logo: "/src/assets/tesla-logo.png",
   },
   {
     id: "5",
@@ -61,6 +65,7 @@ const mockJobs = [
     posted: "1 day ago",
     visaType: "Tier 2 Visa",
     description: "Create intuitive user experiences for our digital products. Portfolio of mobile and web designs required.",
+    logo: "/src/assets/apple-logo.png",
   },
   {
     id: "6",
@@ -73,6 +78,7 @@ const mockJobs = [
     posted: "1 day ago",
     visaType: "H1-B Visa",
     description: "Build and deploy ML models at scale. Experience with TensorFlow, PyTorch, and cloud platforms required.",
+    logo: "/src/assets/meta-logo.png",
   },
 ];
 

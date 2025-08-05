@@ -95,9 +95,7 @@ export const JobCard = ({ job }: JobCardProps) => {
           size="sm"
           onClick={(e) => {
             e.preventDefault();
-            if (job.url) {
-              window.open(job.url, '_blank', 'noopener,noreferrer');
-            }
+            window.location.href = '/signup';
           }}
         >
           <span>View Details & Apply</span>
