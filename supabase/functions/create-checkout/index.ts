@@ -61,12 +61,12 @@ serve(async (req) => {
       line_items: [
         {
           price_data: {
-            currency: "gbp",
+            currency: "usd",
             product_data: { 
               name: "Premium Job Platform Access",
-              description: "Monthly subscription for £9.99 - Access to premium job postings and features"
+              description: "Monthly subscription for $9.99 - Access to premium job postings and features"
             },
-            unit_amount: 999, // £9.99
+            unit_amount: 999, // $9.99
             recurring: { interval: "month" },
           },
           quantity: 1,
