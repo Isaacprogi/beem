@@ -6,9 +6,10 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, Filter, MapPin, Briefcase, GraduationCap, Clock } from "lucide-react";
+import { Search, Filter, MapPin, Briefcase, GraduationCap, Clock, Eye, Timer } from "lucide-react";
 import { analytics } from "@/utils/analytics";
 import { useScrollTracking } from "@/hooks/useScrollTracking";
+import { useAuth } from "@/contexts/AuthContext";
 import googleLogo from "@/assets/google-logo-new.png";
 import metaLogo from "@/assets/meta-logo-new.png";
 import appleLogo from "@/assets/apple-logo-new.png";
@@ -161,6 +162,15 @@ export const Jobs = () => {
   useScrollTracking('Browse Jobs');
   
   const navigate = useNavigate();
+  const { 
+    isTrialActive, 
+    isTrialExpired, 
+    hasViewedMaxTrialPages, 
+    trialInfo, 
+    startTrial, 
+    incrementTrialPageView 
+  } = useAuth();
+  
   const [searchTerm, setSearchTerm] = useState("");
   const [locationFilter, setLocationFilter] = useState("");
   const [yearsExperienceFilter, setYearsExperienceFilter] = useState("");
@@ -200,11 +210,31 @@ export const Jobs = () => {
     }
   }, [locationFilter, filteredJobs.length]);
 
-  const handleTrialClick = () => {
-    analytics.trackTrialStart('jobs_page');
-    analytics.trackSignUpStart('jobs_page_trial');
-    navigate('/pricing');
+  const handleTrialClick = async () => {
+    if (!isTrialActive && !isTrialExpired) {
+      await startTrial();
+      analytics.trackTrialStart('jobs_page');
+    } else {
+      analytics.trackSignUpStart('jobs_page_trial');
+      navigate('/pricing');
+    }
   };
+
+  const handleJobInteraction = () => {
+    if (isTrialActive && !hasViewedMaxTrialPages) {
+      incrementTrialPageView();
+    }
+  };
+
+  // Calculate remaining time in hours
+  const getRemainingTime = () => {
+    if (!isTrialActive || !trialInfo.trialStartedAt) return 0;
+    const elapsed = Date.now() - trialInfo.trialStartedAt.getTime();
+    const remaining = Math.max(0, 24 - Math.floor(elapsed / (1000 * 60 * 60)));
+    return remaining;
+  };
+
+  const shouldBlurContent = isTrialActive && hasViewedMaxTrialPages;
 
   return (
     <div className="min-h-screen bg-background">
@@ -293,6 +323,41 @@ export const Jobs = () => {
         </div>
       </section>
 
+      {/* Trial Status */}
+      {isTrialActive && (
+        <section className="py-4 bg-muted/30 border-b">
+          <div className="container">
+            <Card className="bg-gradient-surface border-primary/20">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2 text-sm">
+                      <Eye className="h-4 w-4 text-primary" />
+                      <span className="font-medium">Trial Active:</span>
+                      <span className="text-muted-foreground">
+                        {trialInfo.trialPageViews}/3 pages viewed
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <Timer className="h-4 w-4 text-primary" />
+                      <span className="font-medium">Time left:</span>
+                      <span className="text-muted-foreground">
+                        {getRemainingTime()}h remaining
+                      </span>
+                    </div>
+                  </div>
+                  {hasViewedMaxTrialPages && (
+                    <Badge variant="outline" className="text-orange-600 border-orange-200">
+                      Trial limit reached
+                    </Badge>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </section>
+      )}
+
       {/* Job Stats */}
       <section className="py-8 border-b">
         <div className="container">
@@ -320,25 +385,76 @@ export const Jobs = () => {
       {/* Jobs List */}
       <section className="py-12">
         <div className="container">
-          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+          <div className={`grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 ${shouldBlurContent ? 'blur-sm' : ''}`}>
             {filteredJobs.map((job) => (
-              <JobCard key={job.id} job={job} />
+              <div key={job.id} onClick={handleJobInteraction}>
+                <JobCard job={job} />
+              </div>
             ))}
           </div>
+          
+          {shouldBlurContent && (
+            <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-50">
+              <Card className="max-w-md mx-auto bg-gradient-surface border-0 shadow-xl">
+                <CardContent className="p-8 text-center">
+                  <h3 className="text-xl font-semibold mb-4">Trial Limit Reached</h3>
+                  <p className="text-muted-foreground mb-6">
+                    You've viewed 3 job pages during your free trial. Upgrade to continue browsing visa-sponsored jobs.
+                  </p>
+                  <Button 
+                    className="w-full bg-gradient-primary hover:shadow-glow transition-all"
+                    onClick={handleTrialClick}
+                  >
+                    Upgrade to Premium
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
+          )}
           
           <div className="text-center mt-16">
             <Card className="max-w-md mx-auto bg-gradient-surface border-0 shadow-lg">
               <CardContent className="p-8 text-center">
-                <h3 className="text-xl font-semibold mb-4">Want to see more jobs?</h3>
-                <p className="text-muted-foreground mb-6">
-                  Get access to additional visa-sponsored positions updated daily
-                </p>
-                <Button 
-                  className="w-full bg-gradient-primary hover:shadow-glow transition-all"
-                  onClick={handleTrialClick}
-                >
-                  Start 24hr Free Trial
-                </Button>
+                {!isTrialActive && !isTrialExpired ? (
+                  <>
+                    <h3 className="text-xl font-semibold mb-4">Start Your Free Trial</h3>
+                    <p className="text-muted-foreground mb-6">
+                      Get 24 hours of free access to browse visa-sponsored jobs
+                    </p>
+                    <Button 
+                      className="w-full bg-gradient-primary hover:shadow-glow transition-all"
+                      onClick={handleTrialClick}
+                    >
+                      Start 24hr Free Trial
+                    </Button>
+                  </>
+                ) : isTrialExpired ? (
+                  <>
+                    <h3 className="text-xl font-semibold mb-4">Trial Expired</h3>
+                    <p className="text-muted-foreground mb-6">
+                      Your free trial has ended. Upgrade to continue accessing visa-sponsored jobs.
+                    </p>
+                    <Button 
+                      className="w-full bg-gradient-primary hover:shadow-glow transition-all"
+                      onClick={handleTrialClick}
+                    >
+                      Upgrade to Premium
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <h3 className="text-xl font-semibold mb-4">Want to see more jobs?</h3>
+                    <p className="text-muted-foreground mb-6">
+                      Get access to additional visa-sponsored positions updated daily
+                    </p>
+                    <Button 
+                      className="w-full bg-gradient-primary hover:shadow-glow transition-all"
+                      onClick={handleTrialClick}
+                    >
+                      Upgrade to Premium
+                    </Button>
+                  </>
+                )}
               </CardContent>
             </Card>
           </div>
