@@ -23,6 +23,7 @@ const allJobs = [
     featured: true,
     logo: "/src/assets/google-logo.png",
     url: "https://careers.google.com/",
+    tags: ["Senior", "Full-time", "Bachelor's", "5+ Years"]
   },
   {
     id: "2",
@@ -37,6 +38,7 @@ const allJobs = [
     description: "Join our data science team to develop machine learning models and extract insights from large datasets using Python, TensorFlow, and AWS.",
     logo: "/src/assets/meta-logo.png",
     url: "https://www.metacareers.com/",
+    tags: ["Mid-level", "Full-time", "Master's", "Python"]
   },
   {
     id: "3",
@@ -51,6 +53,7 @@ const allJobs = [
     description: "Lead product development and strategy for our innovative B2B platform. Experience with agile methodologies and user research required.",
     logo: "/src/assets/apple-logo.png",
     url: "https://www.apple.com/careers/us/",
+    tags: ["Senior", "Full-time", "Bachelor's", "Management"]
   },
   {
     id: "4",
@@ -65,6 +68,7 @@ const allJobs = [
     description: "Design and maintain cloud infrastructure, automate deployment processes using Kubernetes, Docker, and ensure system reliability.",
     logo: "/src/assets/microsoft-logo.png",
     url: "https://careers.microsoft.com/",
+    tags: ["Mid-level", "Full-time", "Bachelor's", "DevOps"]
   },
   {
     id: "5",
@@ -79,6 +83,7 @@ const allJobs = [
     description: "Create intuitive user experiences for our digital products. Portfolio of mobile and web designs required. Figma and user testing experience preferred.",
     logo: "/src/assets/tesla-logo.png",
     url: "https://www.tesla.com/careers",
+    tags: ["Mid-level", "Full-time", "Bachelor's", "Design"]
   },
   {
     id: "6",
@@ -93,6 +98,7 @@ const allJobs = [
     description: "Build and deploy ML models at scale. Experience with TensorFlow, PyTorch, and cloud platforms required. PhD in Computer Science preferred.",
     logo: "/src/assets/amazon-logo.png",
     url: "https://www.amazon.jobs/",
+    tags: ["Senior", "Full-time", "Master's", "AI/ML"]
   },
   {
     id: "7",
@@ -107,6 +113,7 @@ const allJobs = [
     description: "Develop responsive web applications using React, TypeScript, and modern CSS frameworks. Experience with accessibility standards required.",
     logo: "/src/assets/goldman-sachs-logo.png",
     url: "https://www.goldmansachs.com/careers",
+    tags: ["Mid-level", "Full-time", "Bachelor's", "Frontend"]
   },
   {
     id: "8",
@@ -121,6 +128,7 @@ const allJobs = [
     description: "Implement security measures and conduct vulnerability assessments. Experience with penetration testing and security frameworks required.",
     logo: "/src/assets/microsoft-logo.png",
     url: "https://careers.microsoft.com/",
+    tags: ["Senior", "Full-time", "Bachelor's", "Security"]
   },
   {
     id: "9",
@@ -135,6 +143,7 @@ const allJobs = [
     description: "Build scalable backend services using Python/Django and PostgreSQL. Experience with microservices architecture and API design preferred.",
     logo: "/src/assets/bny-mellon-logo.png",
     url: "https://www.bny.com/corporate/global/en/careers/work-with-us.html",
+    tags: ["Mid-level", "Full-time", "Bachelor's", "Backend"]
   },
 ];
 

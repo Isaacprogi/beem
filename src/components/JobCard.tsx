@@ -18,6 +18,7 @@ interface JobCardProps {
     featured?: boolean;
     logo?: string;
     url?: string;
+    tags?: string[];
   };
 }
 
@@ -84,9 +85,24 @@ export const JobCard = ({ job }: JobCardProps) => {
           </Badge>
         </div>
         
+        
         <p className="text-sm text-muted-foreground leading-relaxed line-clamp-2">
           {job.description}
         </p>
+        
+        {job.tags && job.tags.length > 0 && (
+          <div className="flex flex-wrap gap-2">
+            {job.tags.map((tag, index) => (
+              <Badge 
+                key={index} 
+                variant="outline" 
+                className="text-xs bg-muted/50 border-border/30 text-muted-foreground hover:bg-primary/10 hover:text-primary"
+              >
+                {tag}
+              </Badge>
+            ))}
+          </div>
+        )}
       </CardContent>
       
       <CardFooter className="pt-0">
