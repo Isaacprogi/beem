@@ -108,7 +108,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signUp = async (email: string, password: string, displayName?: string) => {
     try {
       setLoading(true);
-      const redirectUrl = `${window.location.origin}/`;
+      const redirectUrl = `${window.location.origin}/checkout`;
       
       const { data, error } = await supabase.auth.signUp({
         email,
@@ -138,7 +138,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               type: 'signup',
               user: { email },
               data: {
-                confirmationUrl: `${window.location.origin}/?confirmed=true`
+                confirmationUrl: `${window.location.origin}/checkout?confirmed=true`
               }
             }
           });
