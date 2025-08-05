@@ -4,7 +4,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { usePageTracking } from "@/hooks/usePageTracking";
-import { AuthProvider } from "@/contexts/AuthContext";
+import { AuthProvider, useAuth } from "@/contexts/AuthContext";
+import { Navigate } from "react-router-dom";
 import Index from "./pages/Index";
 import { Jobs } from "./pages/Jobs";
 import { PricingPage } from "./pages/PricingPage";
@@ -21,12 +22,26 @@ import SubscriptionSuccess from "./pages/SubscriptionSuccess";
 
 const queryClient = new QueryClient();
 
+const PublicOrRedirect = () => {
+  const { user, loading } = useAuth();
+  
+  if (loading) {
+    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+  }
+  
+  if (user) {
+    return <Navigate to="/jobs" replace />;
+  }
+  
+  return <Index />;
+};
+
 const AppContent = () => {
   usePageTracking();
   
   return (
     <Routes>
-          <Route path="/" element={<Index />} />
+          <Route path="/" element={<PublicOrRedirect />} />
           <Route path="/jobs" element={
             <ProtectedRoute requireSubscription={true}>
               <Jobs />

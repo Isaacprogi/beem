@@ -47,7 +47,7 @@ export const SignIn = () => {
     
     if (!error) {
       analytics.trackSignInSuccess();
-      navigate('/');
+      navigate('/jobs');
     }
   };
 
