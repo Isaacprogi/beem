@@ -117,7 +117,7 @@ export const JobsList = () => {
           </p>
           <Button 
             size="lg" 
-            className="bg-gradient-hero hover:opacity-90 transition-opacity px-8"
+            className="bg-gradient-primary hover:opacity-90 transition-opacity px-8"
           >
             Upgrade to Premium
           </Button>
