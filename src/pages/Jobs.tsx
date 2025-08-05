@@ -9,6 +9,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Search, Filter, MapPin, Briefcase, GraduationCap, Clock } from "lucide-react";
 import { analytics } from "@/utils/analytics";
 import { useScrollTracking } from "@/hooks/useScrollTracking";
+import googleLogo from "@/assets/google-logo.png";
+import metaLogo from "@/assets/meta-logo.png";
+import appleLogo from "@/assets/apple-logo.png";
+import microsoftLogo from "@/assets/microsoft-logo.png";
+import teslaLogo from "@/assets/tesla-logo.png";
+import amazonLogo from "@/assets/amazon-logo.png";
+import goldmanSachsLogo from "@/assets/goldman-sachs-logo.png";
+import bnyMellonLogo from "@/assets/bny-mellon-logo.png";
 
 const allJobs = [
   {
@@ -23,7 +31,7 @@ const allJobs = [
     visaType: "Tier 2 Visa",
     description: "We're looking for an experienced software engineer to join our growing team. You'll work on cutting-edge projects using React, Node.js, and cloud technologies.",
     featured: true,
-    logo: "/src/assets/google-logo.png",
+    logo: googleLogo,
     url: "https://careers.google.com/",
     tags: ["Senior Associate", "Full-time", "Bachelor's", "5+ Years"]
   },
@@ -38,7 +46,7 @@ const allJobs = [
     posted: "4 hours ago",
     visaType: "H1-B Visa",
     description: "Join our data science team to develop machine learning models and extract insights from large datasets using Python, TensorFlow, and AWS.",
-    logo: "/src/assets/meta-logo.png",
+    logo: metaLogo,
     url: "https://www.metacareers.com/",
     tags: ["Associate", "Full-time", "Master's", "Python"]
   },
@@ -53,7 +61,7 @@ const allJobs = [
     posted: "6 hours ago",
     visaType: "Skilled Worker Visa",
     description: "Lead product development and strategy for our innovative B2B platform. Experience with agile methodologies and user research required.",
-    logo: "/src/assets/apple-logo.png",
+    logo: appleLogo,
     url: "https://www.apple.com/careers/us/",
     tags: ["Senior Associate", "Full-time", "Bachelor's", "Management"]
   },
@@ -68,7 +76,7 @@ const allJobs = [
     posted: "8 hours ago",
     visaType: "O-1 Visa",
     description: "Design and maintain cloud infrastructure, automate deployment processes using Kubernetes, Docker, and ensure system reliability.",
-    logo: "/src/assets/microsoft-logo.png",
+    logo: microsoftLogo,
     url: "https://careers.microsoft.com/",
     tags: ["Associate", "Full-time", "Bachelor's", "DevOps"]
   },
@@ -83,7 +91,7 @@ const allJobs = [
     posted: "1 day ago",
     visaType: "Tier 2 Visa",
     description: "Create intuitive user experiences for our digital products. Portfolio of mobile and web designs required. Figma and user testing experience preferred.",
-    logo: "/src/assets/tesla-logo.png",
+    logo: teslaLogo,
     url: "https://www.tesla.com/careers",
     tags: ["Associate", "Full-time", "Bachelor's", "Design"]
   },
@@ -98,7 +106,7 @@ const allJobs = [
     posted: "1 day ago",
     visaType: "H1-B Visa",
     description: "Build and deploy ML models at scale. Experience with TensorFlow, PyTorch, and cloud platforms required. PhD in Computer Science preferred.",
-    logo: "/src/assets/amazon-logo.png",
+    logo: amazonLogo,
     url: "https://www.amazon.jobs/",
     tags: ["Senior Associate", "Full-time", "Master's", "AI/ML"]
   },
@@ -113,7 +121,7 @@ const allJobs = [
     posted: "2 days ago",
     visaType: "Skilled Worker Visa",
     description: "Develop responsive web applications using React, TypeScript, and modern CSS frameworks. Experience with accessibility standards required.",
-    logo: "/src/assets/goldman-sachs-logo.png",
+    logo: goldmanSachsLogo,
     url: "https://www.goldmansachs.com/careers",
     tags: ["Associate", "Full-time", "Bachelor's", "Frontend"]
   },
@@ -128,7 +136,7 @@ const allJobs = [
     posted: "2 days ago",
     visaType: "H1-B Visa",
     description: "Implement security measures and conduct vulnerability assessments. Experience with penetration testing and security frameworks required.",
-    logo: "/src/assets/microsoft-logo.png",
+    logo: microsoftLogo,
     url: "https://careers.microsoft.com/",
     tags: ["Senior Associate", "Full-time", "Bachelor's", "Security"]
   },
@@ -143,7 +151,7 @@ const allJobs = [
     posted: "3 days ago",
     visaType: "Tier 2 Visa",
     description: "Build scalable backend services using Python/Django and PostgreSQL. Experience with microservices architecture and API design preferred.",
-    logo: "/src/assets/bny-mellon-logo.png",
+    logo: bnyMellonLogo,
     url: "https://www.bny.com/corporate/global/en/careers/work-with-us.html",
     tags: ["Associate", "Full-time", "Bachelor's", "Backend"]
   },
@@ -195,7 +203,7 @@ export const Jobs = () => {
   const handleTrialClick = () => {
     analytics.trackTrialStart('jobs_page');
     analytics.trackSignUpStart('jobs_page_trial');
-    window.location.href = 'https://buy.stripe.com/aFa28k6qfdqf7EX0KFcMM00';
+    navigate('/pricing');
   };
 
   return (
