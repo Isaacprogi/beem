@@ -1,9 +1,14 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 
 export default function Checkout() {
   const { user } = useAuth();
+
+  // Immediately redirect to Stripe payment link
+  useEffect(() => {
+    window.location.href = 'https://buy.stripe.com/aFa28k6qfdqf7EX0KFcMM00';
+  }, []);
 
   const handleStartTrial = () => {
     if (!user) {
