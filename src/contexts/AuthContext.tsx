@@ -28,6 +28,7 @@ interface AuthContextType {
   loading: boolean;
   authReady: boolean;
   checkoutPending: boolean;
+  subscriptionLoading: boolean;
   subscriptionStatus: {
     subscribed: boolean;
     subscription_tier: string | null;
@@ -66,6 +67,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
   const [authReady, setAuthReady] = useState(false);
   const [checkoutPending, setCheckoutPendingState] = useState(false);
+  const [subscriptionLoading, setSubscriptionLoading] = useState(false);
   const [subscriptionStatus, setSubscriptionStatus] = useState({
     subscribed: false,
     subscription_tier: null as string | null,
@@ -151,6 +153,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const checkSubscription = async () => {
     if (!session) return;
     
+    setSubscriptionLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke('check-subscription');
       if (error) throw error;
@@ -167,6 +170,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     } catch (error) {
       console.error('Error checking subscription:', error);
+    } finally {
+      setSubscriptionLoading(false);
     }
   };
 
@@ -220,13 +225,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             description: "You've been successfully signed in.",
           });
           
-          // Check subscription after sign in
+          // Check subscription after sign in and navigate conditionally
           if (session) {
             await checkSubscription();
+            // Only navigate if not already on jobs page and not in checkout
+            const currentPath = window.location.pathname;
+            if (!currentPath.startsWith('/jobs') && !checkoutPending) {
+              navigate('/jobs');
+            }
           }
-          
-          // Navigate to jobs page
-          navigate('/jobs');
         } else if (event === 'SIGNED_OUT') {
           toast({
             title: "Signed out",
@@ -257,18 +264,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     );
 
     // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
       
       // Check subscription if user is already signed in
       if (session) {
-        checkSubscription();
+        await checkSubscription();
         
-        // Redirect already signed-in users from public pages
+        // Only redirect from public pages after subscription check completes
+        // and if not in checkout pending state
         const currentPath = window.location.pathname;
-        if (currentPath === '/' || currentPath === '/sign-in' || currentPath === '/sign-up') {
+        const publicPaths = ['/', '/sign-in', '/sign-up', '/pricing'];
+        const storedPending = sessionStorage.getItem('checkout_pending') === 'true';
+        
+        if (publicPaths.includes(currentPath) && !storedPending) {
           navigate('/jobs');
         }
       }
@@ -496,6 +507,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     loading,
     authReady,
     checkoutPending,
+    subscriptionLoading,
     subscriptionStatus,
     trialInfo,
     isTrialActive,
@@ -515,7 +527,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   return (
     <AuthContext.Provider value={value}>
-      {children}
+      {!loading && authReady && !subscriptionLoading ? children : null}
     </AuthContext.Provider>
   );
 };
