@@ -13,7 +13,7 @@ export const useCustomAuth = () => {
       if (error) return { error };
       
       // Send custom confirmation email
-      if (data.user && !data.user.email_confirmed_at) {
+      if (data?.user && !data.user.email_confirmed_at) {
         await supabase.functions.invoke('send-auth-email', {
           body: {
             type: 'signup',

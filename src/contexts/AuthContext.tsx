@@ -7,7 +7,7 @@ interface AuthContextType {
   user: User | null;
   session: Session | null;
   loading: boolean;
-  signUp: (email: string, password: string, displayName?: string) => Promise<{ error: any }>;
+  signUp: (email: string, password: string, displayName?: string) => Promise<{ data?: any; error: any }>;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<{ error: any }>;
@@ -84,7 +84,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           description: error.message,
           variant: "destructive",
         });
-        return { error };
+        return { data, error };
       }
 
       // Send custom branded confirmation email
@@ -109,14 +109,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         description: "Please check your email to verify your account.",
       });
 
-      return { error: null };
+      return { data, error: null };
     } catch (error: any) {
       toast({
         title: "Error",
         description: "An unexpected error occurred.",
         variant: "destructive",
       });
-      return { error };
+      return { data: undefined, error };
     } finally {
       setLoading(false);
     }
