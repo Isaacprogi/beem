@@ -2,19 +2,32 @@ import React, { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 
 export default function Checkout() {
   const [selectedPlan, setSelectedPlan] = useState('monthly');
   const { user } = useAuth();
 
-  const handleStartTrial = () => {
+  const handleStartTrial = async () => {
     if (!user) {
       alert('Please sign in to start your free trial');
       return;
     }
 
-    // Redirect directly to Stripe Payment Link
-    window.location.href = 'https://buy.stripe.com/aFa28k6qfdqf7EX0KFcMM00';
+    try {
+      const { data, error } = await supabase.functions.invoke('create-checkout', {
+        body: { plan: selectedPlan }
+      });
+
+      if (error) throw error;
+
+      if (data?.url) {
+        window.location.href = data.url;
+      }
+    } catch (error) {
+      console.error('Error creating checkout session:', error);
+      alert('Failed to start trial. Please try again.');
+    }
   };
 
   return (
