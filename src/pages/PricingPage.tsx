@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
 import { Pricing } from "@/components/Pricing";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -97,6 +99,8 @@ export const PricingPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <Header />
+      <main>
       {/* Hero Section */}
       <section className="py-16 bg-gradient-glow">
         <div className="container text-center">
@@ -178,6 +182,8 @@ export const PricingPage = () => {
           </div>
         </div>
       </section>
+      </main>
+      <Footer />
     </div>
   );
 };
