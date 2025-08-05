@@ -12,6 +12,7 @@ export const PricingPage = () => {
   const handleTrialClick = () => {
     analytics.trackTrialStart('pricing_page');
     analytics.trackSignUpStart('pricing_page_trial');
+    window.location.href = 'https://buy.stripe.com/aFa28k6qfdqf7EX0KFcMM00';
   };
 
   const benefits = [
