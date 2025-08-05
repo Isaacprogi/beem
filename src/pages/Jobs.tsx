@@ -151,6 +151,8 @@ export const Jobs = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [locationFilter, setLocationFilter] = useState("");
+  const [yearsExperienceFilter, setYearsExperienceFilter] = useState("");
+  const [experienceLevelFilter, setExperienceLevelFilter] = useState("");
 
   const filteredJobs = useMemo(() => {
     return allJobs.filter((job) => {
@@ -166,7 +168,7 @@ export const Jobs = () => {
 
       return matchesSearch && matchesLocation;
     });
-  }, [searchTerm, locationFilter]);
+  }, [searchTerm, locationFilter, yearsExperienceFilter, experienceLevelFilter]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -220,19 +222,32 @@ export const Jobs = () => {
                       <SelectItem value="other">Other</SelectItem>
                     </SelectContent>
                   </Select>
-                  <Select>
+                  <Select value={yearsExperienceFilter} onValueChange={setYearsExperienceFilter}>
                     <SelectTrigger className="w-[180px] h-12">
                       <Clock className="h-4 w-4 mr-2" />
-                      <SelectValue placeholder="Experience" />
+                      <SelectValue placeholder="Years Experience" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="internship">Internship</SelectItem>
                       <SelectItem value="less-than-1">&lt;1 years</SelectItem>
                       <SelectItem value="1-2-years">1-2 years</SelectItem>
                       <SelectItem value="3-4-years">3-4 years</SelectItem>
                       <SelectItem value="5-7-years">5-7 years</SelectItem>
                       <SelectItem value="8-14-years">8-14 years</SelectItem>
                       <SelectItem value="15-plus-years">15+ years</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Select value={experienceLevelFilter} onValueChange={setExperienceLevelFilter}>
+                    <SelectTrigger className="w-[180px] h-12">
+                      <Briefcase className="h-4 w-4 mr-2" />
+                      <SelectValue placeholder="Experience Level" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="internship">Internship</SelectItem>
+                      <SelectItem value="entry-level">Entry level</SelectItem>
+                      <SelectItem value="associate">Associate</SelectItem>
+                      <SelectItem value="mid-senior">Mid-Senior level</SelectItem>
+                      <SelectItem value="director">Director</SelectItem>
+                      <SelectItem value="executive">Executive</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
