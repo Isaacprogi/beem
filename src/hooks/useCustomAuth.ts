@@ -12,14 +12,14 @@ export const useCustomAuth = () => {
       
       if (error) return { error };
       
-      // Send custom confirmation email
+      // Send custom confirmation email with redirect to checkout
       if (data?.user && !data.user.email_confirmed_at) {
         await supabase.functions.invoke('send-auth-email', {
           body: {
             type: 'signup',
             user: { email },
             data: {
-              confirmationUrl: `${window.location.origin}/auth/confirm?token=${data.user.confirmation_token}`
+              confirmationUrl: `${window.location.origin}/checkout?confirmed=true`
             }
           }
         });

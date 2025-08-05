@@ -7,11 +7,17 @@ interface AuthContextType {
   user: User | null;
   session: Session | null;
   loading: boolean;
+  subscriptionStatus: {
+    subscribed: boolean;
+    subscription_tier: string | null;
+    subscription_end: string | null;
+  };
   signUp: (email: string, password: string, displayName?: string) => Promise<{ data?: any; error: any }>;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<{ error: any }>;
   updatePassword: (newPassword: string) => Promise<{ error: any }>;
+  checkSubscription: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -28,6 +34,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [subscriptionStatus, setSubscriptionStatus] = useState({
+    subscribed: false,
+    subscription_tier: null as string | null,
+    subscription_end: null as string | null,
+  });
+
+  const checkSubscription = async () => {
+    if (!session) return;
+    
+    try {
+      const { data, error } = await supabase.functions.invoke('check-subscription');
+      if (error) throw error;
+      
+      setSubscriptionStatus({
+        subscribed: data.subscribed || false,
+        subscription_tier: data.subscription_tier || null,
+        subscription_end: data.subscription_end || null,
+      });
+    } catch (error) {
+      console.error('Error checking subscription:', error);
+    }
+  };
 
   useEffect(() => {
     // Set up auth state listener
@@ -41,10 +69,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             title: "Welcome back to BleemHire!",
             description: "You've been successfully signed in.",
           });
+          // Check subscription after sign in
+          if (session) {
+            await checkSubscription();
+          }
         } else if (event === 'SIGNED_OUT') {
           toast({
             title: "Signed out",
             description: "You've been successfully signed out from BleemHire.",
+          });
+          // Reset subscription status on sign out
+          setSubscriptionStatus({
+            subscribed: false,
+            subscription_tier: null,
+            subscription_end: null,
           });
         }
         
@@ -57,6 +95,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
+      
+      // Check subscription if user is already signed in
+      if (session) {
+        checkSubscription();
+      }
     });
 
     return () => subscription.unsubscribe();
@@ -256,11 +299,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     user,
     session,
     loading,
+    subscriptionStatus,
     signUp,
     signIn,
     signOut,
     resetPassword,
     updatePassword,
+    checkSubscription,
   };
 
   return (

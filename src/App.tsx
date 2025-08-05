@@ -9,6 +9,8 @@ import Index from "./pages/Index";
 import { Jobs } from "./pages/Jobs";
 import { PricingPage } from "./pages/PricingPage";
 import { PostJob } from "./pages/PostJob";
+import Checkout from "./pages/Checkout";
+import ProtectedRoute from "./components/ProtectedRoute";
 import { SignUp } from "./pages/SignUp";
 import { SignIn } from "./pages/SignIn";
 import { ForgotPassword } from "./pages/ForgotPassword";
@@ -24,9 +26,22 @@ const AppContent = () => {
   return (
     <Routes>
           <Route path="/" element={<Index />} />
-          <Route path="/jobs" element={<Jobs />} />
+          <Route path="/jobs" element={
+            <ProtectedRoute requireSubscription={true}>
+              <Jobs />
+            </ProtectedRoute>
+          } />
           <Route path="/pricing" element={<PricingPage />} />
-          <Route path="/post-job" element={<PostJob />} />
+          <Route path="/post-job" element={
+            <ProtectedRoute>
+              <PostJob />
+            </ProtectedRoute>
+          } />
+          <Route path="/checkout" element={
+            <ProtectedRoute>
+              <Checkout />
+            </ProtectedRoute>
+          } />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/sign-in" element={<SignIn />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
