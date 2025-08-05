@@ -2,22 +2,48 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
+import { useNavigate } from 'react-router-dom';
+import { initializeApp } from 'firebase/app';
+import { getAuth, signInAnonymously, signInWithCustomToken } from 'firebase/auth';
+import { getFirestore, doc, setDoc, updateDoc, onSnapshot, serverTimestamp } from 'firebase/firestore';
+
+// Firebase configuration
+const firebaseConfig = {
+  apiKey: "demo-api-key",
+  authDomain: "demo-project.firebaseapp.com",
+  projectId: "demo-project",
+  storageBucket: "demo-project.appspot.com",
+  messagingSenderId: "123456789",
+  appId: "demo-app-id"
+};
+
+interface TrialInfo {
+  trialStartedAt: Date | null;
+  trialPageViews: number;
+}
 
 interface AuthContextType {
   user: User | null;
   session: Session | null;
   loading: boolean;
+  authReady: boolean;
   subscriptionStatus: {
     subscribed: boolean;
     subscription_tier: string | null;
     subscription_end: string | null;
   };
+  trialInfo: TrialInfo;
+  isTrialActive: boolean;
+  isTrialExpired: boolean;
+  hasViewedMaxTrialPages: boolean;
   signUp: (email: string, password: string, displayName?: string) => Promise<{ data?: any; error: any }>;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<{ error: any }>;
   updatePassword: (newPassword: string) => Promise<{ error: any }>;
   checkSubscription: () => Promise<void>;
+  startTrial: () => Promise<void>;
+  incrementTrialPageView: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -31,14 +57,70 @@ export const useAuth = () => {
 };
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [authReady, setAuthReady] = useState(false);
   const [subscriptionStatus, setSubscriptionStatus] = useState({
     subscribed: false,
     subscription_tier: null as string | null,
     subscription_end: null as string | null,
   });
+  const [trialInfo, setTrialInfo] = useState<TrialInfo>({
+    trialStartedAt: null,
+    trialPageViews: 0,
+  });
+
+  // Firebase initialization
+  const [firebaseApp] = useState(() => initializeApp(firebaseConfig));
+  const [firebaseAuth] = useState(() => getAuth(firebaseApp));
+  const [firestore] = useState(() => getFirestore(firebaseApp));
+
+  // Trial constants
+  const TRIAL_DURATION_HOURS = 24;
+  const MAX_TRIAL_PAGES = 3;
+
+  // Computed trial states
+  const isTrialActive = !subscriptionStatus.subscribed && trialInfo.trialStartedAt !== null;
+  const isTrialExpired = trialInfo.trialStartedAt 
+    ? new Date().getTime() - trialInfo.trialStartedAt.getTime() > TRIAL_DURATION_HOURS * 60 * 60 * 1000
+    : false;
+  const hasViewedMaxTrialPages = trialInfo.trialPageViews >= MAX_TRIAL_PAGES;
+
+  // Firebase initialization
+  const initializeFirebase = async () => {
+    if (!user) return;
+
+    try {
+      // Sign in anonymously to Firebase for trial tracking
+      await signInAnonymously(firebaseAuth);
+      setAuthReady(true);
+      
+      // Set up trial info listener
+      const trialDocRef = getUserTrialDocRef();
+      const unsubscribe = onSnapshot(trialDocRef, (doc) => {
+        if (doc.exists()) {
+          const data = doc.data();
+          setTrialInfo({
+            trialStartedAt: data.trialStartedAt?.toDate() || null,
+            trialPageViews: data.trialPageViews || 0,
+          });
+        }
+      });
+
+      return unsubscribe;
+    } catch (error) {
+      console.error('Firebase initialization error:', error);
+      setAuthReady(true); // Set ready even on error to prevent blocking
+    }
+  };
+
+  // Helper to get trial document reference
+  const getUserTrialDocRef = () => {
+    if (!user?.id) throw new Error('User not authenticated');
+    return doc(firestore, 'trial_info', user.id);
+  };
 
   const checkSubscription = async () => {
     if (!session) return;
@@ -57,6 +139,43 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const startTrial = async () => {
+    if (!authReady || !user) return;
+
+    try {
+      const trialDocRef = getUserTrialDocRef();
+      await setDoc(trialDocRef, {
+        trialStartedAt: serverTimestamp(),
+        trialPageViews: 0,
+      });
+      
+      toast({
+        title: "Free trial started!",
+        description: "You have 24 hours to browse 3 job pages.",
+      });
+    } catch (error) {
+      console.error('Error starting trial:', error);
+      toast({
+        title: "Error",
+        description: "Failed to start trial. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const incrementTrialPageView = async () => {
+    if (!authReady || !user || !isTrialActive) return;
+
+    try {
+      const trialDocRef = getUserTrialDocRef();
+      await updateDoc(trialDocRef, {
+        trialPageViews: trialInfo.trialPageViews + 1,
+      });
+    } catch (error) {
+      console.error('Error incrementing trial page view:', error);
+    }
+  };
+
   useEffect(() => {
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -69,21 +188,37 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             title: "Welcome back to BleemHire!",
             description: "You've been successfully signed in.",
           });
+          
           // Check subscription after sign in
           if (session) {
             await checkSubscription();
           }
+          
+          // Navigate to jobs page
+          navigate('/jobs');
         } else if (event === 'SIGNED_OUT') {
           toast({
             title: "Signed out",
             description: "You've been successfully signed out from BleemHire.",
           });
+          
           // Reset subscription status on sign out
           setSubscriptionStatus({
             subscribed: false,
             subscription_tier: null,
             subscription_end: null,
           });
+          
+          // Reset trial info
+          setTrialInfo({
+            trialStartedAt: null,
+            trialPageViews: 0,
+          });
+          
+          setAuthReady(false);
+          
+          // Navigate to home page
+          navigate('/');
         }
         
         setLoading(false);
@@ -99,11 +234,40 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Check subscription if user is already signed in
       if (session) {
         checkSubscription();
+        
+        // Redirect already signed-in users from public pages
+        const currentPath = window.location.pathname;
+        if (currentPath === '/' || currentPath === '/sign-in' || currentPath === '/sign-up') {
+          navigate('/jobs');
+        }
       }
     });
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [navigate]);
+
+  // Initialize Firebase when user changes
+  useEffect(() => {
+    let unsubscribe: (() => void) | undefined;
+    
+    if (user) {
+      initializeFirebase().then((unsub) => {
+        unsubscribe = unsub;
+      });
+    } else {
+      setAuthReady(false);
+      setTrialInfo({
+        trialStartedAt: null,
+        trialPageViews: 0,
+      });
+    }
+
+    return () => {
+      if (unsubscribe) {
+        unsubscribe();
+      }
+    };
+  }, [user]);
 
   const signUp = async (email: string, password: string, displayName?: string) => {
     try {
@@ -299,13 +463,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     user,
     session,
     loading,
+    authReady,
     subscriptionStatus,
+    trialInfo,
+    isTrialActive,
+    isTrialExpired,
+    hasViewedMaxTrialPages,
     signUp,
     signIn,
     signOut,
     resetPassword,
     updatePassword,
     checkSubscription,
+    startTrial,
+    incrementTrialPageView,
   };
 
   return (
