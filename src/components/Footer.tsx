@@ -1,4 +1,5 @@
 import { Linkedin, Instagram } from "lucide-react";
+import marcusJohnsonProfile from "@/assets/marcus-johnson-profile.jpg";
 
 export const Footer = () => {
   return (
@@ -61,7 +62,7 @@ export const Footer = () => {
             <div className="bg-gradient-surface p-6 rounded-xl border border-border/50">
               <div className="flex items-center mb-4">
                 <img 
-                  src="https://images.unsplash.com/photo-1581092795360-fd1ca04f0952?w=64&h=64&fit=crop&crop=face" 
+                  src={marcusJohnsonProfile} 
                   alt="Marcus Johnson" 
                   className="w-12 h-12 rounded-full mr-4"
                 />
