@@ -27,6 +27,7 @@ interface AuthContextType {
   session: Session | null;
   loading: boolean;
   authReady: boolean;
+  checkoutPending: boolean;
   subscriptionStatus: {
     subscribed: boolean;
     subscription_tier: string | null;
@@ -44,6 +45,8 @@ interface AuthContextType {
   checkSubscription: () => Promise<void>;
   startTrial: () => Promise<void>;
   incrementTrialPageView: () => Promise<void>;
+  setCheckoutPending: (pending: boolean) => void;
+  clearCheckoutPending: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -62,6 +65,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [authReady, setAuthReady] = useState(false);
+  const [checkoutPending, setCheckoutPendingState] = useState(false);
   const [subscriptionStatus, setSubscriptionStatus] = useState({
     subscribed: false,
     subscription_tier: null as string | null,
@@ -122,6 +126,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return doc(firestore, 'trial_info', user.id);
   };
 
+  // Checkout pending state management
+  const setCheckoutPending = (pending: boolean) => {
+    setCheckoutPendingState(pending);
+    if (pending) {
+      sessionStorage.setItem('checkout_pending', 'true');
+    } else {
+      sessionStorage.removeItem('checkout_pending');
+    }
+  };
+
+  const clearCheckoutPending = () => {
+    setCheckoutPending(false);
+  };
+
+  // Initialize checkout pending state from session storage
+  useEffect(() => {
+    const storedPending = sessionStorage.getItem('checkout_pending');
+    if (storedPending === 'true') {
+      setCheckoutPendingState(true);
+    }
+  }, []);
+
   const checkSubscription = async () => {
     if (!session) return;
     
@@ -134,6 +160,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         subscription_tier: data.subscription_tier || null,
         subscription_end: data.subscription_end || null,
       });
+
+      // Clear checkout pending if we now have a subscription
+      if (data.subscribed) {
+        clearCheckoutPending();
+      }
     } catch (error) {
       console.error('Error checking subscription:', error);
     }
@@ -464,6 +495,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     session,
     loading,
     authReady,
+    checkoutPending,
     subscriptionStatus,
     trialInfo,
     isTrialActive,
@@ -477,6 +509,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     checkSubscription,
     startTrial,
     incrementTrialPageView,
+    setCheckoutPending,
+    clearCheckoutPending,
   };
 
   return (

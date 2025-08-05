@@ -23,13 +23,14 @@ import SubscriptionSuccess from "./pages/SubscriptionSuccess";
 const queryClient = new QueryClient();
 
 const PublicOrRedirect = () => {
-  const { user, loading } = useAuth();
+  const { user, loading, checkoutPending } = useAuth();
   
   if (loading) {
     return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
   }
   
-  if (user) {
+  // Don't redirect if checkout is pending to avoid infinite loops
+  if (user && !checkoutPending) {
     return <Navigate to="/jobs" replace />;
   }
   
