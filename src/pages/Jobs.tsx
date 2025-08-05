@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import { Search, Filter, MapPin, Briefcase, GraduationCap, Clock, Eye, Timer } from "lucide-react";
 import { analytics } from "@/utils/analytics";
 import { useScrollTracking } from "@/hooks/useScrollTracking";
@@ -158,6 +159,8 @@ const allJobs = [
   },
 ];
 
+const JOBS_PER_PAGE = 15;
+
 export const Jobs = () => {
   useScrollTracking('Browse Jobs');
   
@@ -175,6 +178,7 @@ export const Jobs = () => {
   const [locationFilter, setLocationFilter] = useState("");
   const [yearsExperienceFilter, setYearsExperienceFilter] = useState("");
   const [experienceLevelFilter, setExperienceLevelFilter] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
 
   const filteredJobs = useMemo(() => {
     return allJobs.filter((job) => {
@@ -191,6 +195,18 @@ export const Jobs = () => {
       return matchesSearch && matchesLocation;
     });
   }, [searchTerm, locationFilter, yearsExperienceFilter, experienceLevelFilter]);
+
+  const totalPages = Math.ceil(filteredJobs.length / JOBS_PER_PAGE);
+  const startIndex = (currentPage - 1) * JOBS_PER_PAGE;
+  const endIndex = startIndex + JOBS_PER_PAGE;
+  const currentJobs = filteredJobs.slice(startIndex, endIndex);
+
+  const handlePageChange = async (page: number) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+      await incrementTrialPageView();
+    }
+  };
 
   // Track search events
   useEffect(() => {
@@ -364,7 +380,9 @@ export const Jobs = () => {
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center gap-6">
               <div className="text-sm text-muted-foreground">
-                <span className="font-semibold text-foreground">250,000</span> jobs found
+                <span className="font-semibold text-foreground">
+                  Showing {startIndex + 1}-{Math.min(endIndex, filteredJobs.length)} of {filteredJobs.length.toLocaleString()}
+                </span> jobs found
               </div>
               <div className="flex items-center gap-4">
                 <Badge variant="outline" className="gap-1">
@@ -386,12 +404,44 @@ export const Jobs = () => {
       <section className="py-12">
         <div className="container">
           <div className={`grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 ${shouldBlurContent ? 'blur-sm' : ''}`}>
-            {filteredJobs.map((job) => (
+            {currentJobs.map((job) => (
               <div key={job.id} onClick={handleJobInteraction}>
                 <JobCard job={job} />
               </div>
             ))}
           </div>
+
+          {totalPages > 1 && (
+            <div className="mt-8 flex justify-center">
+              <Pagination>
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious 
+                      onClick={() => handlePageChange(currentPage - 1)}
+                      className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                    />
+                  </PaginationItem>
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                    <PaginationItem key={page}>
+                      <PaginationLink
+                        onClick={() => handlePageChange(page)}
+                        isActive={page === currentPage}
+                        className="cursor-pointer"
+                      >
+                        {page}
+                      </PaginationLink>
+                    </PaginationItem>
+                  ))}
+                  <PaginationItem>
+                    <PaginationNext 
+                      onClick={() => handlePageChange(currentPage + 1)}
+                      className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            </div>
+          )}
           
           {shouldBlurContent && (
             <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-50">
