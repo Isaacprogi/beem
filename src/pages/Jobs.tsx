@@ -195,7 +195,7 @@ export const Jobs = () => {
   const handleTrialClick = () => {
     analytics.trackTrialStart('jobs_page');
     analytics.trackSignUpStart('jobs_page_trial');
-    navigate('/signup');
+    window.location.href = 'https://buy.stripe.com/aFa28k6qfdqf7EX0KFcMM00';
   };
 
   return (
