@@ -38,13 +38,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         
         if (event === 'SIGNED_IN') {
           toast({
-            title: "Welcome back!",
+            title: "Welcome back to BleemHire!",
             description: "You've been successfully signed in.",
           });
         } else if (event === 'SIGNED_OUT') {
           toast({
             title: "Signed out",
-            description: "You've been successfully signed out.",
+            description: "You've been successfully signed out from BleemHire.",
           });
         }
         
@@ -67,7 +67,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setLoading(true);
       const redirectUrl = `${window.location.origin}/`;
       
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -87,8 +87,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return { error };
       }
 
+      // Send custom branded confirmation email
+      if (data.user && !data.user.email_confirmed_at) {
+        try {
+          await supabase.functions.invoke('send-auth-email', {
+            body: {
+              type: 'signup',
+              user: { email },
+              data: {
+                confirmationUrl: `${window.location.origin}/?confirmed=true`
+              }
+            }
+          });
+        } catch (emailError) {
+          console.warn('Custom email failed, falling back to default:', emailError);
+        }
+      }
+
       toast({
-        title: "Account created!",
+        title: "Welcome to BleemHire!",
         description: "Please check your email to verify your account.",
       });
 
@@ -168,8 +185,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return { error };
       }
 
+      // Send custom branded reset email
+      try {
+        await supabase.functions.invoke('send-auth-email', {
+          body: {
+            type: 'recovery',
+            user: { email },
+            data: {
+              resetUrl: redirectUrl
+            }
+          }
+        });
+      } catch (emailError) {
+        console.warn('Custom email failed, falling back to default:', emailError);
+      }
+
       toast({
-        title: "Reset email sent!",
+        title: "Password reset email sent!",
         description: "Please check your email for password reset instructions.",
       });
 
