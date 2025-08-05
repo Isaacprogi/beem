@@ -1,18 +1,56 @@
+import { useState } from "react";
 import { Pricing } from "@/components/Pricing";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Check, Users, Clock, Shield, Zap } from "lucide-react";
+import { Check, Users, Clock, Shield, Zap, Loader2 } from "lucide-react";
 import { analytics } from "@/utils/analytics";
 import { useScrollTracking } from "@/hooks/useScrollTracking";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 export const PricingPage = () => {
   useScrollTracking('Pricing');
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const [isCreatingCheckout, setIsCreatingCheckout] = useState(false);
   
-  const handleTrialClick = () => {
+  const handleTrialClick = async () => {
+    if (!user) {
+      toast({
+        title: "Please sign in",
+        description: "You need to be signed in to start your trial.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     analytics.trackTrialStart('pricing_page');
     analytics.trackSignUpStart('pricing_page_trial');
-    window.location.href = 'https://buy.stripe.com/aFa28k6qfdqf7EX0KFcMM00';
+    setIsCreatingCheckout(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('create-checkout', {
+        headers: {
+          Authorization: `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`,
+        },
+      });
+
+      if (error) throw error;
+
+      if (data?.url) {
+        window.open(data.url, '_blank');
+      }
+    } catch (error) {
+      console.error('Error creating checkout:', error);
+      toast({
+        title: "Error",
+        description: "Failed to create checkout session. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsCreatingCheckout(false);
+    }
   };
 
   const benefits = [
@@ -126,8 +164,16 @@ export const PricingPage = () => {
               className="bg-gradient-primary hover:shadow-glow transition-all px-8"
               size="lg"
               onClick={handleTrialClick}
+              disabled={isCreatingCheckout}
             >
-              Start Your 24hr Free Trial
+              {isCreatingCheckout ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Setting up trial...
+                </>
+              ) : (
+                "Start Your 24hr Free Trial"
+              )}
             </Button>
           </div>
         </div>
