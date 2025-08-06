@@ -1,5 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
 import { JobCard } from "@/components/JobCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -254,6 +256,7 @@ export const Jobs = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <Header />
       {/* Hero Section */}
       <section className="py-16 bg-gradient-glow">
         <div className="container">
@@ -510,6 +513,7 @@ export const Jobs = () => {
           </div>
         </div>
       </section>
+      <Footer />
     </div>
   );
 };

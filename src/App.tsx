@@ -44,7 +44,7 @@ const AppContent = () => {
     <Routes>
           <Route path="/" element={<PublicOrRedirect />} />
           <Route path="/jobs" element={
-            <ProtectedRoute requireSubscription={true}>
+            <ProtectedRoute>
               <Jobs />
             </ProtectedRoute>
           } />
