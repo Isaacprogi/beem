@@ -8,160 +8,41 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import { Search, Filter, MapPin, Briefcase, GraduationCap, Clock, Eye, Timer } from "lucide-react";
 import { analytics } from "@/utils/analytics";
 import { useScrollTracking } from "@/hooks/useScrollTracking";
 import { useAuth } from "@/contexts/AuthContext";
-import googleLogo from "@/assets/google-logo-new.png";
-import metaLogo from "@/assets/meta-logo-new.png";
-import appleLogo from "@/assets/apple-logo-new.png";
-import microsoftLogo from "@/assets/microsoft-logo-new.png";
-import teslaLogo from "@/assets/tesla-logo-new.png";
-import amazonLogo from "@/assets/amazon-logo-new.png";
-import goldmanSachsLogo from "@/assets/goldman-sachs-logo-new.png";
-import bnyMellonLogo from "@/assets/bny-mellon-logo-new.png";
+import { supabase } from "@/integrations/supabase/client";
+import { Skeleton } from "@/components/ui/skeleton";
+import type { Database } from "@/integrations/supabase/types";
 
-const allJobs = [
-  {
-    id: "1",
-    title: "Senior Software Engineer",
-    company: "Google",
-    location: "London",
-    country: "UK",
-    salary: "£70,000 - £90,000",
-    type: "Full-time",
-    posted: "2 hours ago",
-    visaType: "Tier 2 Visa",
-    description: "We're looking for an experienced software engineer to join our growing team. You'll work on cutting-edge projects using React, Node.js, and cloud technologies.",
-    featured: true,
-    logo: googleLogo,
-    url: "https://careers.google.com/",
-    tags: ["Senior Associate", "Full-time", "Bachelor's", "5+ Years"]
-  },
-  {
-    id: "2",
-    title: "Data Scientist",
-    company: "Meta",
-    location: "San Francisco",
-    country: "USA",
-    salary: "$120,000 - $150,000",
-    type: "Full-time",
-    posted: "4 hours ago",
-    visaType: "H1-B Visa",
-    description: "Join our data science team to develop machine learning models and extract insights from large datasets using Python, TensorFlow, and AWS.",
-    logo: metaLogo,
-    url: "https://www.metacareers.com/",
-    tags: ["Associate", "Full-time", "Master's", "Python"]
-  },
-  {
-    id: "3",
-    title: "Product Manager",
-    company: "Apple",
-    location: "Manchester",
-    country: "UK",
-    salary: "£60,000 - £80,000",
-    type: "Full-time",
-    posted: "6 hours ago",
-    visaType: "Skilled Worker Visa",
-    description: "Lead product development and strategy for our innovative B2B platform. Experience with agile methodologies and user research required.",
-    logo: appleLogo,
-    url: "https://www.apple.com/careers/us/",
-    tags: ["Senior Associate", "Full-time", "Bachelor's", "Management"]
-  },
-  {
-    id: "4",
-    title: "DevOps Engineer",
-    company: "Microsoft",
-    location: "Austin",
-    country: "USA",
-    salary: "$95,000 - $125,000",
-    type: "Full-time",
-    posted: "8 hours ago",
-    visaType: "O-1 Visa",
-    description: "Design and maintain cloud infrastructure, automate deployment processes using Kubernetes, Docker, and ensure system reliability.",
-    logo: microsoftLogo,
-    url: "https://careers.microsoft.com/",
-    tags: ["Associate", "Full-time", "Bachelor's", "DevOps"]
-  },
-  {
-    id: "5",
-    title: "UX Designer",
-    company: "Tesla",
-    location: "Edinburgh",
-    country: "UK",
-    salary: "£45,000 - £65,000",
-    type: "Full-time",
-    posted: "1 day ago",
-    visaType: "Tier 2 Visa",
-    description: "Create intuitive user experiences for our digital products. Portfolio of mobile and web designs required. Figma and user testing experience preferred.",
-    logo: teslaLogo,
-    url: "https://www.tesla.com/careers",
-    tags: ["Associate", "Full-time", "Bachelor's", "Design"]
-  },
-  {
-    id: "6",
-    title: "Machine Learning Engineer",
-    company: "Amazon",
-    location: "Boston",
-    country: "USA",
-    salary: "$130,000 - $160,000",
-    type: "Full-time",
-    posted: "1 day ago",
-    visaType: "H1-B Visa",
-    description: "Build and deploy ML models at scale. Experience with TensorFlow, PyTorch, and cloud platforms required. PhD in Computer Science preferred.",
-    logo: amazonLogo,
-    url: "https://www.amazon.jobs/",
-    tags: ["Senior Associate", "Full-time", "Master's", "AI/ML"]
-  },
-  {
-    id: "7",
-    title: "Frontend Developer",
-    company: "Goldman Sachs",
-    location: "Birmingham",
-    country: "UK",
-    salary: "£50,000 - £70,000",
-    type: "Full-time",
-    posted: "2 days ago",
-    visaType: "Skilled Worker Visa",
-    description: "Develop responsive web applications using React, TypeScript, and modern CSS frameworks. Experience with accessibility standards required.",
-    logo: goldmanSachsLogo,
-    url: "https://www.goldmansachs.com/careers",
-    tags: ["Associate", "Full-time", "Bachelor's", "Frontend"]
-  },
-  {
-    id: "8",
-    title: "Security Engineer",
-    company: "Microsoft",
-    location: "Seattle",
-    country: "USA",
-    salary: "$110,000 - $140,000",
-    type: "Full-time",
-    posted: "2 days ago",
-    visaType: "H1-B Visa",
-    description: "Implement security measures and conduct vulnerability assessments. Experience with penetration testing and security frameworks required.",
-    logo: microsoftLogo,
-    url: "https://careers.microsoft.com/",
-    tags: ["Senior Associate", "Full-time", "Bachelor's", "Security"]
-  },
-  {
-    id: "9",
-    title: "Backend Developer",
-    company: "BNY Mellon",
-    location: "Bristol",
-    country: "UK",
-    salary: "£55,000 - £75,000",
-    type: "Full-time",
-    posted: "3 days ago",
-    visaType: "Tier 2 Visa",
-    description: "Build scalable backend services using Python/Django and PostgreSQL. Experience with microservices architecture and API design preferred.",
-    logo: bnyMellonLogo,
-    url: "https://www.bny.com/corporate/global/en/careers/work-with-us.html",
-    tags: ["Associate", "Full-time", "Bachelor's", "Backend"]
-  },
-];
+type Job = Database['public']['Tables']['jobs']['Row'];
 
 const JOBS_PER_PAGE = 15;
+
+const JobCardSkeleton = () => (
+  <Card className="bg-gradient-surface border-0 shadow-lg hover:shadow-glow transition-all duration-300">
+    <CardContent className="p-6">
+      <div className="flex items-start gap-4 mb-4">
+        <Skeleton className="h-12 w-12 rounded-lg" />
+        <div className="flex-1">
+          <Skeleton className="h-5 w-3/4 mb-2" />
+          <Skeleton className="h-4 w-1/2" />
+        </div>
+      </div>
+      <div className="space-y-2 mb-4">
+        <Skeleton className="h-4 w-full" />
+        <Skeleton className="h-4 w-5/6" />
+      </div>
+      <div className="flex flex-wrap gap-2">
+        <Skeleton className="h-6 w-20" />
+        <Skeleton className="h-6 w-24" />
+        <Skeleton className="h-6 w-16" />
+      </div>
+    </CardContent>
+  </Card>
+);
 
 export const Jobs = () => {
   useScrollTracking('Browse Jobs');
@@ -176,27 +57,53 @@ export const Jobs = () => {
     incrementTrialPageView 
   } = useAuth();
   
+  const [allJobs, setAllJobs] = useState<Job[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [locationFilter, setLocationFilter] = useState("");
   const [yearsExperienceFilter, setYearsExperienceFilter] = useState("");
   const [experienceLevelFilter, setExperienceLevelFilter] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
 
+  useEffect(() => {
+    const fetchJobs = async () => {
+      setIsLoading(true);
+      try {
+        const { data, error } = await supabase
+          .from('jobs')
+          .select('*')
+          .eq('is_active', true)
+          .order('created_at', { ascending: false });
+
+        if (error) {
+          throw error;
+        }
+        setAllJobs(data || []);
+      } catch (error) {
+        console.error("Error fetching jobs:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchJobs();
+  }, []);
+
   const filteredJobs = useMemo(() => {
     return allJobs.filter((job) => {
       const matchesSearch = searchTerm === "" || 
         job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        job.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        job.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        job.description.toLowerCase().includes(searchTerm.toLowerCase());
+        (job.company && job.company.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (job.location && job.location.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (job.description && job.description.toLowerCase().includes(searchTerm.toLowerCase()));
       
       const matchesLocation = locationFilter === "" || 
-        (locationFilter === "uk" && job.country === "UK") ||
-        (locationFilter === "usa" && job.country === "USA");
+        (locationFilter === "uk" && job.location?.toLowerCase().includes("uk")) ||
+        (locationFilter === "usa" && job.location?.toLowerCase().includes("usa"));
 
       return matchesSearch && matchesLocation;
     });
-  }, [searchTerm, locationFilter, yearsExperienceFilter, experienceLevelFilter]);
+  }, [allJobs, searchTerm, locationFilter, yearsExperienceFilter, experienceLevelFilter]);
 
   const totalPages = Math.ceil(filteredJobs.length / JOBS_PER_PAGE);
   const startIndex = (currentPage - 1) * JOBS_PER_PAGE;
@@ -407,11 +314,15 @@ export const Jobs = () => {
       <section className="py-12">
         <div className="container">
           <div className={`grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 ${shouldBlurContent ? 'blur-sm' : ''}`}>
-            {currentJobs.map((job) => (
-              <div key={job.id} onClick={handleJobInteraction}>
-                <JobCard job={job} />
-              </div>
-            ))}
+            {isLoading ? (
+              Array.from({ length: 6 }).map((_, index) => <JobCardSkeleton key={index} />)
+            ) : (
+              currentJobs.map((job) => (
+                <div key={job.id} onClick={handleJobInteraction}>
+                  <JobCard job={job} />
+                </div>
+              ))
+            )}
           </div>
 
           {totalPages > 1 && (

@@ -53,6 +53,13 @@ serve(async (req) => {
       logStep("No existing customer found");
     }
 
+    const { priceId } = await req.json();
+    const defaultPriceId = Deno.env.get("DEFAULT_STRIPE_PRICE_ID");
+
+    if (!priceId && !defaultPriceId) {
+      throw new Error("No priceId provided and no default price ID is set in environment variables.");
+    }
+
     const origin = req.headers.get("origin") || "http://localhost:3000";
     
     const session = await stripe.checkout.sessions.create({
@@ -60,15 +67,7 @@ serve(async (req) => {
       customer_email: customerId ? undefined : user.email,
       line_items: [
         {
-          price_data: {
-            currency: "usd",
-            product_data: { 
-              name: "Premium Job Platform Access",
-              description: "Monthly subscription for $9.99 - Access to premium job postings and features"
-            },
-            unit_amount: 999, // $9.99
-            recurring: { interval: "month" },
-          },
+          price: priceId || defaultPriceId,
           quantity: 1,
         },
       ],

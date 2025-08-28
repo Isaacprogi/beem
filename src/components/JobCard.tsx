@@ -4,28 +4,16 @@ import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { MapPin, Clock, DollarSign, Building2, ExternalLink } from "lucide-react";
 import { analytics } from "@/utils/analytics";
 import { useEffect, useRef } from "react";
+import type { Database } from "@/integrations/supabase/types";
+import { formatDistanceToNow } from 'date-fns';
+
+type Job = Database['public']['Tables']['jobs']['Row'];
 
 interface JobCardProps {
-  job: {
-    id: string;
-    title: string;
-    company: string;
-    location: string;
-    country: string;
-    salary: string;
-    type: string;
-    posted: string;
-    visaType: string;
-    description: string;
-    featured?: boolean;
-    logo?: string;
-    url?: string;
-    tags?: string[];
-  };
+  job: Job;
 }
 
 export const JobCard = ({ job }: JobCardProps) => {
-  const countryFlag = job.country === "UK" ? "🇬🇧" : "🇺🇸";
   const cardRef = useRef<HTMLDivElement>(null);
   const viewTracked = useRef(false);
 
@@ -35,7 +23,7 @@ export const JobCard = ({ job }: JobCardProps) => {
       ([entry]) => {
         if (entry.isIntersecting && !viewTracked.current) {
           viewTracked.current = true;
-          analytics.trackJobView(job.id, job.title, job.company);
+          analytics.trackJobView(job.id, job.title, job.company || '');
         }
       },
       { threshold: 0.5 }
@@ -49,16 +37,21 @@ export const JobCard = ({ job }: JobCardProps) => {
   }, [job.id, job.title, job.company]);
 
   const handleJobClick = () => {
-    analytics.trackJobClick(job.id, job.title, job.company, job.location);
+    analytics.trackJobClick(job.id, job.title, job.company || '', job.location || '');
   };
 
   const handleApplyClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    analytics.trackJobApply(job.id, job.title, job.company);
-    analytics.trackSignUpStart('job_card');
-    window.location.href = '/signup';
+    analytics.trackJobApply(job.id, job.title, job.company || '');
+    if (job.application_url) {
+      window.open(job.application_url, '_blank');
+    } else if (job.application_email) {
+      window.location.href = `mailto:${job.application_email}`;
+    }
   };
   
+  const postedAt = job.created_at ? formatDistanceToNow(new Date(job.created_at), { addSuffix: true }) : 'N/A';
+
   return (
     <Card 
       ref={cardRef}
@@ -74,15 +67,7 @@ export const JobCard = ({ job }: JobCardProps) => {
         <div className="flex items-start justify-between gap-4">
           <div className="flex items-center gap-3 min-w-0 flex-1">
             <div className="h-12 w-12 rounded-xl bg-white border border-border/20 flex items-center justify-center flex-shrink-0 overflow-hidden">
-              {job.logo ? (
-                <img 
-                  src={job.logo} 
-                  alt={`${job.company} logo`}
-                  className="h-full w-full object-cover"
-                />
-              ) : (
-                <Building2 className="h-6 w-6 text-primary" />
-              )}
+              <Building2 className="h-6 w-6 text-primary" />
             </div>
             <div className="min-w-0 flex-1">
               <h3 className="font-semibold text-lg text-card-foreground group-hover:text-primary transition-colors leading-tight">
@@ -91,12 +76,6 @@ export const JobCard = ({ job }: JobCardProps) => {
               <p className="text-muted-foreground font-medium text-sm">{job.company}</p>
             </div>
           </div>
-          <Badge 
-            variant="secondary" 
-            className="bg-success/10 text-success border-success/20 hover:bg-success/20 flex-shrink-0"
-          >
-            {countryFlag} {job.visaType}
-          </Badge>
         </div>
       </CardHeader>
       
@@ -104,22 +83,24 @@ export const JobCard = ({ job }: JobCardProps) => {
         <div className="flex items-center gap-4 text-sm text-muted-foreground">
           <div className="flex items-center gap-1">
             <MapPin className="h-4 w-4" />
-            <span>{job.location}, {job.country}</span>
+            <span>{job.location}</span>
           </div>
           <div className="flex items-center gap-1">
             <Clock className="h-4 w-4" />
-            <span>{job.posted}</span>
+            <span>{postedAt}</span>
           </div>
         </div>
         
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-1 text-sm font-semibold">
             <DollarSign className="h-4 w-4 text-success" />
-            <span className="text-success">{job.salary}</span>
+            <span className="text-success">{job.salary_range || 'Not specified'}</span>
           </div>
-          <Badge variant="outline" className="text-xs">
-            {job.type}
-          </Badge>
+          {job.type && (
+            <Badge variant="outline" className="text-xs">
+              {job.type}
+            </Badge>
+          )}
         </div>
         
         
@@ -127,19 +108,6 @@ export const JobCard = ({ job }: JobCardProps) => {
           {job.description}
         </p>
         
-        {job.tags && job.tags.length > 0 && (
-          <div className="flex flex-wrap gap-2">
-            {job.tags.map((tag, index) => (
-              <Badge 
-                key={index} 
-                variant="outline" 
-                className="text-xs bg-muted/50 border-border/30 text-muted-foreground hover:bg-primary/10 hover:text-primary"
-              >
-                {tag}
-              </Badge>
-            ))}
-          </div>
-        )}
       </CardContent>
       
       <CardFooter className="pt-0">

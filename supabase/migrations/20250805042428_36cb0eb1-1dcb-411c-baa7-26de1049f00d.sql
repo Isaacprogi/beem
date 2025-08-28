@@ -20,11 +20,12 @@ FOR SELECT
 USING (user_id = auth.uid() OR email = auth.email());
 
 -- Create policy for edge functions to update subscription info
-CREATE POLICY "update_own_subscription" ON public.subscribers
+-- Disable client-side updates
+CREATE POLICY "client_update_disabled" ON public.subscribers
 FOR UPDATE
-USING (true);
+USING (false);
 
--- Create policy for edge functions to insert subscription info
-CREATE POLICY "insert_subscription" ON public.subscribers
+-- Disable client-side inserts
+CREATE POLICY "client_insert_disabled" ON public.subscribers
 FOR INSERT
-WITH CHECK (true);
+WITH CHECK (false);
