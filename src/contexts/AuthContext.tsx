@@ -189,68 +189,38 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-        
-        if (event === 'SIGNED_IN') {
-          setLoading(true);
-          await Promise.all([
-            checkSubscription(),
-            fetchTrialInfo(session!.user.id)
-          ]);
-          setLoading(false);
-          setAuthReady(true);
-          toast({
-            title: "Welcome back to BleemHire!",
-            description: "You've been successfully signed in.",
-          });
-          const currentPath = window.location.pathname;
-          if (!currentPath.startsWith('/jobs') && !checkoutPending) {
-            navigate('/jobs');
-          }
-        } else if (event === 'SIGNED_OUT') {
-          setSubscriptionStatus({ subscribed: false, subscription_tier: null, subscription_end: null });
-          setTrialInfo({ trialStartedAt: null, trialPageViews: 0 });
-          setAuthReady(false);
-          toast({
-            title: "Signed out",
-            description: "You've been successfully signed out from BleemHire.",
-          });
-          navigate('/');
-        }
-        setLoading(false);
-      }
-    );
+ useEffect(() => {
+  const init = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    setSession(session);
+    setUser(session?.user ?? null);
 
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
+    if (session) {
+      await Promise.all([
+        checkSubscription(),
+        fetchTrialInfo(session.user.id)
+      ]);
+    }
+
+    // ✅ Always mark auth as ready
+    setAuthReady(true);
+    setLoading(false);
+  };
+
+  init();
+
+  // Listen for future changes
+  const { data: { subscription } } = supabase.auth.onAuthStateChange(
+    async (event, session) => {
       setSession(session);
       setUser(session?.user ?? null);
-      if (session) {
-        setLoading(true);
-        await Promise.all([
-            checkSubscription(),
-            fetchTrialInfo(session.user.id)
-        ]);
-        setAuthReady(true);
-        setLoading(false);
-        const currentPath = window.location.pathname;
-        const publicPaths = ['/', '/sign-in', '/sign-up', '/pricing'];
-        const storedPending = sessionStorage.getItem('checkout_pending') === 'true';
-        
-        if (publicPaths.includes(currentPath) && !storedPending) {
-          navigate('/jobs');
-        }
-      } else {
-        setAuthReady(true);
-        setLoading(false);
-      }
-    });
+      setAuthReady(true);
+    }
+  );
 
-    return () => subscription.unsubscribe();
-  }, [navigate]);
+  return () => subscription.unsubscribe();
+}, []);
+
 
 
   const signUp = async (email: string, password: string, displayName?: string) => {
@@ -365,7 +335,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   return (
     <AuthContext.Provider value={value}>
-      {!loading && authReady ? children : "hello"}
+      {!loading && authReady ? children : null}
     </AuthContext.Provider>
   );
 };

@@ -24,6 +24,7 @@ const queryClient = new QueryClient();
 
 const PublicOrRedirect = () => {
   const { user, loading, checkoutPending } = useAuth();
+
   
   if (loading) {
     return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
