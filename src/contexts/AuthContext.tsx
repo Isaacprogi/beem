@@ -3,19 +3,7 @@ import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
-import { initializeApp } from 'firebase/app';
-import { getAuth, signInAnonymously, signInWithCustomToken } from 'firebase/auth';
-import { getFirestore, doc, setDoc, updateDoc, onSnapshot, serverTimestamp } from 'firebase/firestore';
-
-// Firebase configuration
-const firebaseConfig = {
-  apiKey: "demo-api-key",
-  authDomain: "demo-project.firebaseapp.com",
-  projectId: "demo-project",
-  storageBucket: "demo-project.appspot.com",
-  messagingSenderId: "123456789",
-  appId: "demo-app-id"
-};
+import { AuthLoadingScreen } from '@/components/AuthLoadingScreen';
 
 interface TrialInfo {
   trialStartedAt: Date | null;
@@ -78,54 +66,37 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     trialPageViews: 0,
   });
 
-  // Firebase initialization
-  const [firebaseApp] = useState(() => initializeApp(firebaseConfig));
-  const [firebaseAuth] = useState(() => getAuth(firebaseApp));
-  const [firestore] = useState(() => getFirestore(firebaseApp));
-
   // Trial constants
   const TRIAL_DURATION_HOURS = 24;
   const MAX_TRIAL_PAGES = 3;
 
   // Computed trial states
   const isTrialActive = !subscriptionStatus.subscribed && trialInfo.trialStartedAt !== null;
-  const isTrialExpired = trialInfo.trialStartedAt 
+  const isTrialExpired = trialInfo.trialStartedAt
     ? new Date().getTime() - trialInfo.trialStartedAt.getTime() > TRIAL_DURATION_HOURS * 60 * 60 * 1000
     : false;
   const hasViewedMaxTrialPages = trialInfo.trialPageViews >= MAX_TRIAL_PAGES;
 
-  // Firebase initialization
-  const initializeFirebase = async () => {
-    if (!user) return;
-
+  const fetchTrialInfo = async (userId: string) => {
     try {
-      // Sign in anonymously to Firebase for trial tracking
-      await signInAnonymously(firebaseAuth);
-      setAuthReady(true);
-      
-      // Set up trial info listener
-      const trialDocRef = getUserTrialDocRef();
-      const unsubscribe = onSnapshot(trialDocRef, (doc) => {
-        if (doc.exists()) {
-          const data = doc.data();
-          setTrialInfo({
-            trialStartedAt: data.trialStartedAt?.toDate() || null,
-            trialPageViews: data.trialPageViews || 0,
-          });
-        }
-      });
+      const { data, error } = await supabase
+        .from('trial_info')
+        .select('*')
+        .eq('user_id', userId)
+        .single();
 
-      return unsubscribe;
+      if (data) {
+        setTrialInfo({
+          trialStartedAt: data.trial_started_at ? new Date(data.trial_started_at) : null,
+          trialPageViews: data.trial_page_views || 0,
+        });
+      }
+      if (error && error.code !== 'PGRST116') { // Ignore 'single row not found' errors
+        console.error('Error fetching trial info:', error);
+      }
     } catch (error) {
-      console.error('Firebase initialization error:', error);
-      setAuthReady(true); // Set ready even on error to prevent blocking
+      console.error('Error in fetchTrialInfo:', error);
     }
-  };
-
-  // Helper to get trial document reference
-  const getUserTrialDocRef = () => {
-    if (!user?.id) throw new Error('User not authenticated');
-    return doc(firestore, 'trial_info', user.id);
   };
 
   // Checkout pending state management
@@ -164,7 +135,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         subscription_end: data.subscription_end || null,
       });
 
-      // Clear checkout pending if we now have a subscription
       if (data.subscribed) {
         clearCheckoutPending();
       }
@@ -176,14 +146,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const startTrial = async () => {
-    if (!authReady || !user) return;
+    if (!user) return;
 
     try {
-      const trialDocRef = getUserTrialDocRef();
-      await setDoc(trialDocRef, {
-        trialStartedAt: serverTimestamp(),
-        trialPageViews: 0,
-      });
+      const { error } = await supabase
+        .from('trial_info')
+        .upsert({ user_id: user.id, trial_started_at: new Date().toISOString(), trial_page_views: 0 }, { onConflict: 'user_id' });
+
+      if (error) throw error;
+
+      await fetchTrialInfo(user.id);
       
       toast({
         title: "Free trial started!",
@@ -200,201 +172,88 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const incrementTrialPageView = async () => {
-    if (!authReady || !user || !isTrialActive) return;
+    if (!user || !isTrialActive) return;
 
     try {
-      const trialDocRef = getUserTrialDocRef();
-      await updateDoc(trialDocRef, {
-        trialPageViews: trialInfo.trialPageViews + 1,
-      });
+        const newPageViewCount = trialInfo.trialPageViews + 1;
+        const { error } = await supabase
+            .from('trial_info')
+            .update({ trial_page_views: newPageViewCount })
+            .eq('user_id', user.id);
+
+        if (error) throw error;
+
+        setTrialInfo(prev => ({ ...prev, trialPageViews: newPageViewCount }));
+
     } catch (error) {
       console.error('Error incrementing trial page view:', error);
     }
   };
 
-  useEffect(() => {
-    // Set up auth state listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-        
-        if (event === 'SIGNED_IN') {
-          toast({
-            title: "Welcome back to BleemHire!",
-            description: "You've been successfully signed in.",
-          });
-          
-          // Check subscription after sign in and navigate conditionally
-          if (session) {
-            await checkSubscription();
-            // Only navigate if not already on jobs page and not in checkout
-            const currentPath = window.location.pathname;
-            if (!currentPath.startsWith('/jobs') && !checkoutPending) {
-              navigate('/jobs');
-            }
-          }
-        } else if (event === 'SIGNED_OUT') {
-          toast({
-            title: "Signed out",
-            description: "You've been successfully signed out from BleemHire.",
-          });
-          
-          // Reset subscription status on sign out
-          setSubscriptionStatus({
-            subscribed: false,
-            subscription_tier: null,
-            subscription_end: null,
-          });
-          
-          // Reset trial info
-          setTrialInfo({
-            trialStartedAt: null,
-            trialPageViews: 0,
-          });
-          
-          setAuthReady(false);
-          
-          // Navigate to home page
-          navigate('/');
-        }
-        
-        setLoading(false);
-      }
-    );
+ useEffect(() => {
+  const init = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    setSession(session);
+    setUser(session?.user ?? null);
 
-    // Get initial session
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      setLoading(false);
-      
-      // Check subscription if user is already signed in
-      if (session) {
-        await checkSubscription();
-        
-        // Only redirect from public pages after subscription check completes
-        // and if not in checkout pending state
-        const currentPath = window.location.pathname;
-        const publicPaths = ['/', '/sign-in', '/sign-up', '/pricing'];
-        const storedPending = sessionStorage.getItem('checkout_pending') === 'true';
-        
-        if (publicPaths.includes(currentPath) && !storedPending) {
-          navigate('/jobs');
-        }
-      }
-    });
-
-    return () => subscription.unsubscribe();
-  }, [navigate]);
-
-  // Initialize Firebase when user changes
-  useEffect(() => {
-    let unsubscribe: (() => void) | undefined;
-    
-    if (user) {
-      initializeFirebase().then((unsub) => {
-        unsubscribe = unsub;
-      });
-    } else {
-      setAuthReady(false);
-      setTrialInfo({
-        trialStartedAt: null,
-        trialPageViews: 0,
-      });
+    if (session) {
+      await Promise.all([
+        checkSubscription(),
+        fetchTrialInfo(session.user.id)
+      ]);
     }
 
-    return () => {
-      if (unsubscribe) {
-        unsubscribe();
-      }
-    };
-  }, [user]);
+    // ✅ Always mark auth as ready
+    setAuthReady(true);
+    setLoading(false);
+  };
+
+  init();
+
+  // Listen for future changes
+  const { data: { subscription } } = supabase.auth.onAuthStateChange(
+    async (event, session) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      setAuthReady(true);
+    }
+  );
+
+  return () => subscription.unsubscribe();
+}, []);
+
+
 
   const signUp = async (email: string, password: string, displayName?: string) => {
+    setLoading(true);
     try {
-      setLoading(true);
-      const redirectUrl = `${window.location.origin}/`;
-      
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
-        options: {
-          emailRedirectTo: redirectUrl,
-          data: {
-            display_name: displayName,
-          },
-        },
+        options: { data: { display_name: displayName } },
       });
-
-      if (error) {
-        toast({
-          title: "Error",
-          description: error.message,
-          variant: "destructive",
-        });
-        return { data, error };
-      }
-
-      // Send custom branded confirmation email
-      if (data.user && !data.user.email_confirmed_at) {
-        try {
-          await supabase.functions.invoke('send-auth-email', {
-            body: {
-              type: 'signup',
-              user: { email },
-              data: {
-                confirmationUrl: `${window.location.origin}/?confirmed=true`
-              }
-            }
-          });
-        } catch (emailError) {
-          console.warn('Custom email failed, falling back to default:', emailError);
-        }
-      }
-
+      if (error) throw error;
       toast({
         title: "Welcome to BleemHire!",
         description: "Please check your email to verify your account.",
       });
-
       return { data, error: null };
     } catch (error: any) {
-      toast({
-        title: "Error",
-        description: "An unexpected error occurred.",
-        variant: "destructive",
-      });
-      return { data: undefined, error };
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+      return { data: null, error };
     } finally {
       setLoading(false);
     }
   };
 
   const signIn = async (email: string, password: string) => {
+    setLoading(true);
     try {
-      setLoading(true);
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (error) {
-        toast({
-          title: "Error",
-          description: error.message,
-          variant: "destructive",
-        });
-        return { error };
-      }
-
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) throw error;
       return { error: null };
     } catch (error: any) {
-      toast({
-        title: "Error",
-        description: "An unexpected error occurred.",
-        variant: "destructive",
-      });
+      toast({ title: "Error", description: error.message, variant: "destructive" });
       return { error };
     } finally {
       setLoading(false);
@@ -402,65 +261,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const signOut = async () => {
+    setLoading(true);
     try {
-      setLoading(true);
-      await supabase.auth.signOut();
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
     } catch (error: any) {
-      toast({
-        title: "Error",
-        description: "Failed to sign out.",
-        variant: "destructive",
-      });
+      toast({ title: "Error", description: "Failed to sign out.", variant: "destructive" });
     } finally {
       setLoading(false);
     }
   };
 
   const resetPassword = async (email: string) => {
+    setLoading(true);
     try {
-      setLoading(true);
-      const redirectUrl = `${window.location.origin}/reset-password`;
-      
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: redirectUrl,
+        redirectTo: `${window.location.origin}/reset-password`,
       });
-
-      if (error) {
-        toast({
-          title: "Error",
-          description: error.message,
-          variant: "destructive",
-        });
-        return { error };
-      }
-
-      // Send custom branded reset email
-      try {
-        await supabase.functions.invoke('send-auth-email', {
-          body: {
-            type: 'recovery',
-            user: { email },
-            data: {
-              resetUrl: redirectUrl
-            }
-          }
-        });
-      } catch (emailError) {
-        console.warn('Custom email failed, falling back to default:', emailError);
-      }
-
+      if (error) throw error;
       toast({
         title: "Password reset email sent!",
         description: "Please check your email for password reset instructions.",
       });
-
       return { error: null };
     } catch (error: any) {
-      toast({
-        title: "Error",
-        description: "An unexpected error occurred.",
-        variant: "destructive",
-      });
+      toast({ title: "Error", description: error.message, variant: "destructive" });
       return { error };
     } finally {
       setLoading(false);
@@ -468,33 +293,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const updatePassword = async (newPassword: string) => {
+    setLoading(true);
     try {
-      setLoading(true);
-      const { error } = await supabase.auth.updateUser({
-        password: newPassword,
-      });
-
-      if (error) {
-        toast({
-          title: "Error",
-          description: error.message,
-          variant: "destructive",
-        });
-        return { error };
-      }
-
+      const { error } = await supabase.auth.updateUser({ password: newPassword });
+      if (error) throw error;
       toast({
         title: "Password updated!",
         description: "Your password has been successfully updated.",
       });
-
       return { error: null };
     } catch (error: any) {
-      toast({
-        title: "Error",
-        description: "An unexpected error occurred.",
-        variant: "destructive",
-      });
+      toast({ title: "Error", description: error.message, variant: "destructive" });
       return { error };
     } finally {
       setLoading(false);
@@ -527,7 +336,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   return (
     <AuthContext.Provider value={value}>
-      {!loading && (authReady || !user) && !subscriptionLoading ? children : null}
+      {!loading && authReady ? children : <AuthLoadingScreen/>}
     </AuthContext.Provider>
   );
 };

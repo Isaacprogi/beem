@@ -72,8 +72,8 @@ serve(async (req) => {
       limit: 1,
     });
     const hasActiveSub = subscriptions.data.length > 0;
-    let subscriptionTier = null;
-    let subscriptionEnd = null;
+    let subscriptionTier:any = null;
+    let subscriptionEnd:any = null;
 
     if (hasActiveSub) {
       const subscription = subscriptions.data[0];
