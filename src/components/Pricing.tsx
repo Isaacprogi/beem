@@ -1,18 +1,35 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Check, Star, Clock, Loader2 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-
+import { analytics } from "@/utils/analytics";
 
 export const Pricing = () => {
-  const { user } = useAuth();
+  const { isTrialActive, isTrialExpired, startTrial, user } = useAuth();
   const { toast } = useToast();
   const [isCreatingCheckout, setIsCreatingCheckout] = useState(false);
-  
+  const trialComplete = !isTrialActive && !isTrialExpired;
+
+  const handleTrialClick = async () => {
+    if (!isTrialActive && !isTrialExpired) {
+      await startTrial();
+      analytics.trackTrialStart("pricing_page");
+      return;
+    } else {
+      handleCheckout();
+    }
+  };
+
   const features = [
     "Access to 3,000+ visa-sponsored jobs",
     "Real-time job updates every hour",
@@ -24,7 +41,7 @@ export const Pricing = () => {
     "Priority customer support",
   ];
 
-  const handleStartTrial = async () => {
+  const handleCheckout = async () => {
     if (!user) {
       toast({
         title: "Please sign in",
@@ -33,22 +50,29 @@ export const Pricing = () => {
       });
       return;
     }
-
+    analytics.trackSignUpStart("pricing_page_trial");
     setIsCreatingCheckout(true);
     try {
-      const { data, error } = await supabase.functions.invoke('create-checkout', {
-        headers: {
-          Authorization: `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`,
-        },
-      });
+      const { data, error } = await supabase.functions.invoke(
+        "create-checkout",
+        {
+          headers: {
+            Authorization: `Bearer ${
+              (
+                await supabase.auth.getSession()
+              ).data.session?.access_token
+            }`,
+          },
+        }
+      );
 
       if (error) throw error;
 
       if (data?.url) {
-        window.open(data.url, '_blank');
+        window.open(data.url, "_blank");
       }
     } catch (error) {
-      console.error('Error creating checkout:', error);
+      console.error("Error creating checkout:", error);
       toast({
         title: "Error",
         description: "Failed to create checkout session. Please try again.",
@@ -71,19 +95,26 @@ export const Pricing = () => {
             Simple, Transparent Pricing
           </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto font-light">
-            Get unlimited access to all visa-sponsored opportunities for one low monthly price.
+            Get unlimited access to all visa-sponsored opportunities for one low
+            monthly price.
           </p>
         </div>
 
         <div className="max-w-lg mx-auto">
           <Card className="relative bg-gradient-surface border-0 shadow-xl overflow-hidden">
             <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-primary" />
-            
+
             <CardHeader className="text-center pb-6 pt-8">
-              <CardTitle className="text-3xl font-bold">Premium Access</CardTitle>
+              <CardTitle className="text-3xl font-bold">
+                Premium Access
+              </CardTitle>
               <div className="mt-6">
-                <span className="text-6xl font-bold bg-gradient-primary bg-clip-text text-transparent">$9.99</span>
-                <span className="text-xl text-muted-foreground ml-2">/month</span>
+                <span className="text-6xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+                  $9.99
+                </span>
+                <span className="text-xl text-muted-foreground ml-2">
+                  /month
+                </span>
               </div>
               <div className="flex items-center justify-center gap-2 mt-3 text-sm text-muted-foreground">
                 <Clock className="h-4 w-4" />
@@ -99,16 +130,18 @@ export const Pricing = () => {
                       <Check className="h-3 w-3 text-success" />
                     </div>
                   </div>
-                  <span className="text-sm text-card-foreground">{feature}</span>
+                  <span className="text-sm text-card-foreground">
+                    {feature}
+                  </span>
                 </div>
               ))}
             </CardContent>
 
             <CardFooter className="pt-8 pb-8 px-8">
-              <Button 
+              <Button
                 className="w-full bg-gradient-primary hover:shadow-glow transition-all text-lg py-6 h-auto font-semibold"
                 size="lg"
-                onClick={handleStartTrial}
+                onClick={handleTrialClick}
                 disabled={isCreatingCheckout}
               >
                 {isCreatingCheckout ? (
@@ -116,6 +149,8 @@ export const Pricing = () => {
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                     Creating checkout...
                   </>
+                ) : !trialComplete ? (
+                  "Upgrade to premium"
                 ) : (
                   "Start 24hr Free Trial"
                 )}

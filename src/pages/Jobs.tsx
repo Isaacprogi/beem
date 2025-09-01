@@ -16,6 +16,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { Database } from "@/integrations/supabase/types";
+import axios from 'axios'
 
 type Job = Database['public']['Tables']['jobs']['Row'];
 
@@ -140,7 +141,6 @@ export const Jobs = () => {
       await startTrial();
       analytics.trackTrialStart('jobs_page');
     } else {
-      analytics.trackSignUpStart('jobs_page_trial');
       navigate('/pricing');
     }
   };

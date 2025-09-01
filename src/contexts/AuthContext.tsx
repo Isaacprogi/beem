@@ -3,6 +3,7 @@ import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
+import { AuthLoadingScreen } from '@/components/AuthLoadingScreen';
 
 interface TrialInfo {
   trialStartedAt: Date | null;
@@ -335,7 +336,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   return (
     <AuthContext.Provider value={value}>
-      {!loading && authReady ? children : null}
+      {!loading && authReady ? children : <AuthLoadingScreen/>}
     </AuthContext.Provider>
   );
 };

@@ -10,6 +10,7 @@ import Index from "./pages/Index";
 import { Jobs } from "./pages/Jobs";
 import { PricingPage } from "./pages/PricingPage";
 import { PostJob } from "./pages/PostJob";
+import Users from "./pages/Users";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 import { SignUp } from "./pages/SignUp";
@@ -19,6 +20,7 @@ import { ResetPassword } from "./pages/ResetPassword";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import NotFound from "./pages/NotFound";
 import SubscriptionSuccess from "./pages/SubscriptionSuccess";
+import Dashboard, { Overview } from "./pages/Dashboard";
 
 const queryClient = new QueryClient();
 
@@ -50,6 +52,11 @@ const AppContent = () => {
             </ProtectedRoute>
           } />
           <Route path="/pricing" element={<PricingPage />} />
+          <Route path="/dashboard" element={<Dashboard />} >
+             <Route index element={<Overview />} />
+             <Route path="users" element={<Users />} />
+             <Route path="jobs" element={<Jobs />} />
+          </Route>
           <Route path="/post-job" element={
             <ProtectedRoute>
               <PostJob />
