@@ -6,14 +6,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Users, Clock, Shield, Zap, Loader2 } from "lucide-react";
-import { analytics } from "@/utils/analytics";
-import { useScrollTracking } from "@/hooks/useScrollTracking";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
 export const PricingPage = () => {
-  useScrollTracking("Pricing");
   const { isTrialActive, isTrialExpired, startTrial, user } = useAuth();
 
   const trialComplete = !isTrialActive && !isTrialExpired;

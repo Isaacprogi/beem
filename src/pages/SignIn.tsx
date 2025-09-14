@@ -5,11 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/contexts/AuthContext";
-import { useScrollTracking } from "@/hooks/useScrollTracking";
-import { analytics } from "@/utils/analytics";
 
 export const SignIn = () => {
-  useScrollTracking('Sign In');
   
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -41,12 +38,9 @@ export const SignIn = () => {
       return;
     }
 
-    analytics.trackSignInAttempt();
-    
     const { error } = await signIn(email, password);
     
     if (!error) {
-      analytics.trackSignInSuccess();
       navigate('/jobs');
     }
   };

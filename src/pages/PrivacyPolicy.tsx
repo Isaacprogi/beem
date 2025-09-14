@@ -22,7 +22,6 @@ const PrivacyPolicy = () => {
               <li><strong>Account Information:</strong> Login credentials and usage data for accessing the database.</li>
               <li><strong>Payment Information:</strong> Processed securely through our third-party payment processor, Stripe.</li>
               <li><strong>Communication Data:</strong> Messages or feedback you provide, including your onboarding form data.</li>
-              <li><strong>Tracking and Analytics Data:</strong> Information collected via cookies, tracking pixels, and third-party tools to monitor engagement across our site (e.g. browsing behavior, heatmaps).</li>
             </ul>
           </section>
 
@@ -35,7 +34,6 @@ const PrivacyPolicy = () => {
               <li>Troubleshoot technical issues and improve the performance of our platform.</li>
               <li>Send service updates and important notifications.</li>
               <li>Send promotional or marketing communications if you have opted in.</li>
-              <li>Track ad performance and user engagement: Using third-party services like LinkedIn Ads, Meta Ads, TikTok Ads, and Smartlook to improve marketing campaigns and user experience.</li>
             </ul>
           </section>
 
@@ -44,8 +42,8 @@ const PrivacyPolicy = () => {
             <p className="mb-4">We process your data under the following legal bases as required by GDPR:</p>
             <ul className="list-disc list-inside space-y-2 ml-4">
               <li><strong>Contractual Necessity:</strong> To provide access to our database and process payments.</li>
-              <li><strong>Consent:</strong> For sending marketing communications and using cookies for analytics and ads.</li>
-              <li><strong>Legitimate Interest:</strong> To improve our platform, track ad performance and ensure the security of your data.</li>
+              <li><strong>Consent:</strong> For sending marketing communications.</li>
+              <li><strong>Legitimate Interest:</strong> To improve our platform and ensure the security of your data.</li>
             </ul>
           </section>
 
@@ -54,7 +52,7 @@ const PrivacyPolicy = () => {
             <p className="mb-4">We may share your data with the following parties:</p>
             <ul className="list-disc list-inside space-y-2 ml-4">
               <li><strong>Payment Processor:</strong> Stripe, for secure payment processing.</li>
-              <li><strong>Service Providers:</strong> Hosting providers (e.g. Cloudflare, Supabase, Algolia & Tilda) to host our database and website, analytics platforms (e.g. Google Analytics) and advertising platforms (e.g. LinkedIn Ads, Meta Pixel, TikTok Ads) to track usage, performance and improve user experience.</li>
+              <li><strong>Service Providers:</strong> Hosting providers (e.g. Cloudflare, Supabase, Algolia & Tilda) to host our database and website.</li>
             </ul>
             <p className="mt-4">We do not sell or rent your data to third parties.</p>
             <p className="mt-4">
@@ -81,23 +79,7 @@ const PrivacyPolicy = () => {
           </section>
 
           <section>
-            <h2 className="text-2xl font-semibold mb-4 text-primary">8. Cookies & Tracking</h2>
-            <p className="mb-4">We use cookies and other tracking technologies to:</p>
-            <ul className="list-disc list-inside space-y-2 ml-4">
-              <li>Improve your user experience.</li>
-              <li>Track usage for analytics and performance insights.</li>
-              <li>Deliver personalized ads.</li>
-            </ul>
-            <p className="mt-4 mb-4"><strong>Cookie Categories:</strong></p>
-            <ul className="list-disc list-inside space-y-2 ml-4">
-              <li><strong>Essential Cookies:</strong> Required for the operation of our website.</li>
-              <li><strong>Analytics Cookies:</strong> To understand user behavior and improve our platform (e.g., Google Analytics, Smartlook).</li>
-              <li><strong>Marketing Cookies:</strong> To deliver targeted advertisements and track ad performance (e.g. LinkedIn Ads, Meta Pixel, TikTok Ads).</li>
-            </ul>
-          </section>
-
-          <section>
-            <h2 className="text-2xl font-semibold mb-4 text-primary">9. Data Security</h2>
+            <h2 className="text-2xl font-semibold mb-4 text-primary">8. Data Security</h2>
             <p className="mb-4">We take the following measures to protect your data:</p>
             <ul className="list-disc list-inside space-y-2 ml-4">
               <li>Encryption of sensitive data during transmission (e.g., SSL/TLS).</li>
@@ -111,7 +93,7 @@ const PrivacyPolicy = () => {
           </section>
 
           <section>
-            <h2 className="text-2xl font-semibold mb-4 text-primary">10. Changes to This Policy</h2>
+            <h2 className="text-2xl font-semibold mb-4 text-primary">9. Changes to This Policy</h2>
             <p className="mb-4">
               We may update this Privacy Policy from time to time to reflect changes in our practices or legal requirements.
             </p>
@@ -122,7 +104,7 @@ const PrivacyPolicy = () => {
           </section>
 
           <section>
-            <h2 className="text-2xl font-semibold mb-4 text-primary">11. Contact Us</h2>
+            <h2 className="text-2xl font-semibold mb-4 text-primary">10. Contact Us</h2>
             <p>
               If you have any questions about this Privacy Policy or how we handle your data, please email info@bleemhire.com
             </p>

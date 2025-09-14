@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
 import { Link, useLocation } from "react-router-dom";
-import { analytics } from "@/utils/analytics";
 import { useAuth } from "@/contexts/AuthContext";
 
 export const Header = () => {
@@ -10,12 +9,9 @@ export const Header = () => {
   const isActive = (path: string) => location.pathname === path;
 
   const handleNavClick = (linkName: string, destination: string) => {
-    analytics.trackNavigation(linkName, destination);
   };
 
   const handleGetStartedClick = () => {
-    analytics.trackGetStarted('header');
-    analytics.trackSignUpStart('header');
   };
   
   return (
