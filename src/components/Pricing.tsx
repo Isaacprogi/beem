@@ -12,7 +12,6 @@ import { Check, Star, Clock, Loader2 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { analytics } from "@/utils/analytics";
 import { useNavigate } from "react-router-dom";
 
 export const Pricing = () => {
@@ -42,7 +41,6 @@ export const Pricing = () => {
   const handleTrialClick = async () => {
     if (!isTrialActive && !isTrialExpired) {
       await startTrial();
-      analytics.trackTrialStart("pricing_page");
       return;
     } else {
       handleCheckout();
@@ -59,7 +57,6 @@ export const Pricing = () => {
       return;
     }
 
-    analytics.trackSignUpStart("pricing_page_trial");
     setIsCreatingCheckout(true);
 
     try {

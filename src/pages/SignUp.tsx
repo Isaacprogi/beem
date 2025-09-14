@@ -4,12 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { useScrollTracking } from "@/hooks/useScrollTracking";
-import { analytics } from "@/utils/analytics";
 import { useAuth } from "@/contexts/AuthContext";
 
 export const SignUp = () => {
-  useScrollTracking('Sign Up');
   
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -54,8 +51,6 @@ export const SignUp = () => {
       return;
     }
 
-    analytics.trackSignUp(email);
-    
     const { error } = await signUp(email, password, displayName);
     
     if (!error) {

@@ -2,7 +2,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { MapPin, Clock, DollarSign, Building2, ExternalLink } from "lucide-react";
-import { analytics } from "@/utils/analytics";
 import { useEffect, useRef } from "react";
 import type { Database } from "@/integrations/supabase/types";
 import { formatDistanceToNow } from 'date-fns';
@@ -23,7 +22,6 @@ export const JobCard = ({ job }: JobCardProps) => {
       ([entry]) => {
         if (entry.isIntersecting && !viewTracked.current) {
           viewTracked.current = true;
-          analytics.trackJobView(job.id, job.title, job.company || '');
         }
       },
       { threshold: 0.5 }
@@ -37,12 +35,10 @@ export const JobCard = ({ job }: JobCardProps) => {
   }, [job.id, job.title, job.company]);
 
   const handleJobClick = () => {
-    analytics.trackJobClick(job.id, job.title, job.company || '', job.location || '');
   };
 
   const handleApplyClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    analytics.trackJobApply(job.id, job.title, job.company || '');
     if (job.application_url) {
       window.open(job.application_url, '_blank');
     } else if (job.application_email) {

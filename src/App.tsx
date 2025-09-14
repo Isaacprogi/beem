@@ -3,7 +3,6 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { usePageTracking } from "@/hooks/usePageTracking";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { Navigate } from "react-router-dom";
 import Index from "./pages/Index";
@@ -45,7 +44,6 @@ const PublicOrRedirect = () => {
 };
 
 const AppContent = () => {
-  usePageTracking();
   
   return (
     <Routes>

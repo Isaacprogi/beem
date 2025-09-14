@@ -32,8 +32,6 @@ import {
   Eye,
   Timer,
 } from "lucide-react";
-import { analytics } from "@/utils/analytics";
-import { useScrollTracking } from "@/hooks/useScrollTracking";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -68,9 +66,6 @@ const JobCardSkeleton = () => (
 );
 
 export const Jobs = () => {
-  useScrollTracking("Browse Jobs");
-
-  useScrollTracking("Browse Jobs");
   const navigate = useNavigate();
   const {
     isTrialActive,

@@ -14,12 +14,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { analytics } from "@/utils/analytics";
-import { useScrollTracking } from "@/hooks/useScrollTracking";
 import { useAuth } from "@/contexts/AuthContext";
 
 export const PostJob = () => {
-  useScrollTracking("Post Job");
 
   const { toast } = useToast();
   const { user } = useAuth();
@@ -101,9 +98,6 @@ export const PostJob = () => {
       });
 
       if (!res.ok) throw new Error("Failed to post job");
-
-      analytics.trackJobPost(formData.company, formData.role);
-      analytics.trackFormSubmit("post_job", true);
 
       toast({
         title: "Job posting submitted!",
