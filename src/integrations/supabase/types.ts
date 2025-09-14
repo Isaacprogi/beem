@@ -16,23 +16,27 @@ export type Database = {
     Tables: {
       jobs: {
         Row: {
-          application_email: string | null
-          application_url: string | null
-          benefits: string | null
-          company: string
-          created_at: string
-          description: string
-          expires_at: string | null
-          featured: boolean
-          id: string
-          is_active: boolean
-          location: string
-          requirements: string | null
-          salary_range: string | null
-          title: string
-          type: string
-          updated_at: string
-          user_id: string
+            id: string;                      // probably UUID or Supabase generated
+  user_id: string;                  // system or user who imported
+  title: string;
+  company: string;
+  location: string | null;          // joined string of locations
+  country: string | null;           // derived from countries_derived
+  type: string;                     // full-time, part-time, etc.
+  description: string | null;
+  requirements: string | null;
+  salary_range: string | null;
+  benefits: string | null;
+  application_url: string | null;
+  application_email: string | null;
+  is_active: boolean;
+  featured: boolean;
+  expires_at: string | null;       // date_validthrough
+  created_at: string;               // original job created_at
+  posted_at: string;                // original job posted_at
+  imported_at: string;              // when imported to your system
+  updated_at: string;               // last update timestamp
+            years_experience:string | null;
         }
         Insert: {
           application_email?: string | null
@@ -51,7 +55,7 @@ export type Database = {
           title: string
           type: string
           updated_at?: string
-          user_id: string
+          user_id: string;
         }
         Update: {
           application_email?: string | null

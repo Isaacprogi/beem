@@ -13,23 +13,20 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { analytics } from "@/utils/analytics";
+import { useNavigate } from "react-router-dom";
 
 export const Pricing = () => {
-  const { isTrialActive, isTrialExpired, startTrial, user } = useAuth();
+  const {
+    isTrialActive,
+    isTrialExpired,
+    startTrial,
+    user,
+    subscriptionStatus,
+  } = useAuth();
   const { toast } = useToast();
   const [isCreatingCheckout, setIsCreatingCheckout] = useState(false);
-  const trialComplete = !isTrialActive && !isTrialExpired;
 
-  const handleTrialClick = async () => {
-    if (!isTrialActive && !isTrialExpired) {
-      await startTrial();
-      analytics.trackTrialStart("pricing_page");
-      return;
-    } else {
-      handleCheckout();
-    }
-  };
-
+  // Features list
   const features = [
     "Access to 3,000+ visa-sponsored jobs",
     "Real-time job updates every hour",
@@ -41,38 +38,53 @@ export const Pricing = () => {
     "Priority customer support",
   ];
 
+  // Button logic based on trial/subscription state
+  const handleTrialClick = async () => {
+    if (!isTrialActive && !isTrialExpired) {
+      await startTrial();
+      analytics.trackTrialStart("pricing_page");
+      return;
+    } else {
+      handleCheckout();
+    }
+  };
+
   const handleCheckout = async () => {
     if (!user) {
       toast({
         title: "Please sign in",
-        description: "You need to be signed in to start your trial.",
+        description: "You need to be signed in to start your trial or upgrade.",
         variant: "destructive",
       });
       return;
     }
+
     analytics.trackSignUpStart("pricing_page_trial");
     setIsCreatingCheckout(true);
+
     try {
-      const { data, error } = await supabase.functions.invoke(
-        "create-checkout",
-        {
-          headers: {
-            Authorization: `Bearer ${
-              (
-                await supabase.auth.getSession()
-              ).data.session?.access_token
-            }`,
-          },
-        }
-      );
+      const session = await supabase.auth.getSession();
+      const accessToken = session.data.session?.access_token;
 
-      if (error) throw error;
+      const response = await supabase.functions.invoke("create-checkout", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          priceId: import.meta.env.VITE_DEFAULT_STRIPE_PRICE_ID,
+          plan: "premium",
+        }),
+      });
 
-      if (data?.url) {
-        window.open(data.url, "_blank");
+      if (response.error) throw response.error;
+
+      if (response.data?.url) {
+        window.open(response.data.url, "_blank");
       }
     } catch (error) {
-      console.error("Error creating checkout:", error);
+      console.log("Error creating checkout:", error);
       toast({
         title: "Error",
         description: "Failed to create checkout session. Please try again.",
@@ -82,6 +94,32 @@ export const Pricing = () => {
       setIsCreatingCheckout(false);
     }
   };
+
+  // Determine button text and action
+  let buttonText = "";
+  let buttonAction: () => void = () => {};
+
+  const navigate = useNavigate()
+
+  if (!user) {
+    buttonText = "Sign in to start trial";
+    buttonAction = ()=>{navigate('/sign-in')};
+  } else if (subscriptionStatus.subscribed) {
+    buttonText = "You’re subscribed! See jobs";
+    buttonAction = () => {navigate('/jobs')};
+  } else if (
+    subscriptionStatus.subscription_end &&
+    new Date(subscriptionStatus.subscription_end) < new Date()
+  ) {
+    buttonText = "Renew Subscription";
+    buttonAction = handleCheckout;
+  } else if (!isTrialActive && isTrialExpired) {
+    buttonText = "Upgrade to Premium";
+    buttonAction = handleCheckout;
+  } else {
+    buttonText = "Start 24hr Free Trial";
+    buttonAction = handleTrialClick;
+  }
 
   return (
     <section id="pricing" className="py-24 bg-gradient-glow">
@@ -105,16 +143,12 @@ export const Pricing = () => {
             <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-primary" />
 
             <CardHeader className="text-center pb-6 pt-8">
-              <CardTitle className="text-3xl font-bold">
-                Premium Access
-              </CardTitle>
+              <CardTitle className="text-3xl font-bold">Premium Access</CardTitle>
               <div className="mt-6">
                 <span className="text-6xl font-bold bg-gradient-primary bg-clip-text text-transparent">
                   $9.99
                 </span>
-                <span className="text-xl text-muted-foreground ml-2">
-                  /month
-                </span>
+                <span className="text-xl text-muted-foreground ml-2">/month</span>
               </div>
               <div className="flex items-center justify-center gap-2 mt-3 text-sm text-muted-foreground">
                 <Clock className="h-4 w-4" />
@@ -130,9 +164,7 @@ export const Pricing = () => {
                       <Check className="h-3 w-3 text-success" />
                     </div>
                   </div>
-                  <span className="text-sm text-card-foreground">
-                    {feature}
-                  </span>
+                  <span className="text-sm text-card-foreground">{feature}</span>
                 </div>
               ))}
             </CardContent>
@@ -141,7 +173,7 @@ export const Pricing = () => {
               <Button
                 className="w-full bg-gradient-primary hover:shadow-glow transition-all text-lg py-6 h-auto font-semibold"
                 size="lg"
-                onClick={handleTrialClick}
+                onClick={buttonAction}
                 disabled={isCreatingCheckout}
               >
                 {isCreatingCheckout ? (
@@ -149,10 +181,8 @@ export const Pricing = () => {
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                     Creating checkout...
                   </>
-                ) : !trialComplete ? (
-                  "Upgrade to premium"
                 ) : (
-                  "Start 24hr Free Trial"
+                  buttonText
                 )}
               </Button>
             </CardFooter>

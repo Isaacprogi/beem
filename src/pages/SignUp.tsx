@@ -59,7 +59,7 @@ export const SignUp = () => {
     const { error } = await signUp(email, password, displayName);
     
     if (!error) {
-      navigate('/pricing');
+      navigate('/check-inbox');
     }
   };
 

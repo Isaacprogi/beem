@@ -21,57 +21,6 @@ export const PricingPage = () => {
   const { toast } = useToast();
   const [isCreatingCheckout, setIsCreatingCheckout] = useState(false);
 
-  const handleTrialClick = async () => {
-    if (!isTrialActive && !isTrialExpired) {
-      await startTrial();
-      analytics.trackTrialStart("pricing_page");
-      return;
-    } else {
-      analytics.trackSignUpStart("pricing_page_trial");
-      handleCheckout();
-    }
-  };
-
-  const handleCheckout = async () => {
-    if (!user) {
-      toast({
-        title: "Please sign in",
-        description: "You need to be signed in to start your trial.",
-        variant: "destructive",
-      });
-      return;
-    }
-    setIsCreatingCheckout(true);
-    try {
-      const { data, error } = await supabase.functions.invoke(
-        "create-checkout",
-        {
-          headers: {
-            Authorization: `Bearer ${
-              (
-                await supabase.auth.getSession()
-              ).data.session?.access_token
-            }`,
-          },
-        }
-      );
-
-      if (error) throw error;
-
-      if (data?.url) {
-        window.open(data.url, "_blank");
-      }
-    } catch (error) {
-      console.error("Error creating checkout:", error);
-      toast({
-        title: "Error",
-        description: "Failed to create checkout session. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsCreatingCheckout(false);
-    }
-  };
 
   const benefits = [
     {
@@ -199,26 +148,6 @@ export const PricingPage = () => {
                   </CardContent>
                 </Card>
               ))}
-            </div>
-
-            <div className="text-center mt-12">
-              <Button
-                className="w-full bg-gradient-primary hover:shadow-glow transition-all text-lg py-6 h-auto font-semibold"
-                size="lg"
-                onClick={handleTrialClick}
-                disabled={isCreatingCheckout}
-              >
-                {isCreatingCheckout ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Creating checkout...
-                  </>
-                ) : !trialComplete ? (
-                  "Upgrade to premium"
-                ) : (
-                  "Start 24hr Free Trial"
-                )}
-              </Button>
             </div>
           </div>
         </section>
