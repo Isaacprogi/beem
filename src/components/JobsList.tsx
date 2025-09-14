@@ -111,17 +111,6 @@ export const JobsList = () => {
           ))}
         </div>
         
-        <div className="text-center mt-12">
-          <p className="text-muted-foreground mb-4">
-            Access to 250,000+ visa-sponsored jobs in the premium access list.
-          </p>
-          <Button 
-            size="lg" 
-            className="bg-gradient-primary hover:opacity-90 transition-opacity px-8"
-          >
-            Upgrade to Premium
-          </Button>
-        </div>
       </div>
     </section>
   );

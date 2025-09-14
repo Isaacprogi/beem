@@ -20,7 +20,11 @@ import { ResetPassword } from "./pages/ResetPassword";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import NotFound from "./pages/NotFound";
 import SubscriptionSuccess from "./pages/SubscriptionSuccess";
-import Dashboard, { Overview } from "./pages/Dashboard";
+import Dashboard from "./pages/Dashboard";
+import JobsTable from "./components/dashboard/JobsTable";
+import EmailVerified from "./pages/EmailVerified";
+import CheckEmail from "./pages/CheckEmail";
+import { Overview } from "./components/dashboard/Overview";
 
 const queryClient = new QueryClient();
 
@@ -52,10 +56,10 @@ const AppContent = () => {
             </ProtectedRoute>
           } />
           <Route path="/pricing" element={<PricingPage />} />
-          <Route path="/dashboard" element={<Dashboard />} >
+          <Route path="/admin-dashboard" element={<Dashboard />} >
              <Route index element={<Overview />} />
              <Route path="users" element={<Users />} />
-             <Route path="jobs" element={<Jobs />} />
+             <Route path="jobs" element={<JobsTable />} />
           </Route>
           <Route path="/post-job" element={
             <ProtectedRoute>
@@ -63,6 +67,8 @@ const AppContent = () => {
             </ProtectedRoute>
           } />
           <Route path="/signup" element={<SignUp />} />
+          <Route path="/email-verified" element={<EmailVerified />} />
+          <Route path="/check-inbox" element={<CheckEmail />} />
           <Route path="/sign-in" element={<SignIn />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />

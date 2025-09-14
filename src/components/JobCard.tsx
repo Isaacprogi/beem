@@ -58,7 +58,8 @@ export const JobCard = ({ job }: JobCardProps) => {
       onClick={handleJobClick}
       className={`group relative overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 bg-gradient-surface border-0 cursor-pointer ${
         job.featured ? 'ring-2 ring-primary/20 shadow-glow' : 'shadow-md'
-      }`}>
+      }`}
+    >
       {job.featured && (
         <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-primary" />
       )}
@@ -70,10 +71,12 @@ export const JobCard = ({ job }: JobCardProps) => {
               <Building2 className="h-6 w-6 text-primary" />
             </div>
             <div className="min-w-0 flex-1">
-              <h3 className="font-semibold text-lg text-card-foreground group-hover:text-primary transition-colors leading-tight">
+              <h3 className="font-semibold text-lg text-card-foreground group-hover:text-primary transition-colors leading-tight truncate">
                 {job.title}
               </h3>
-              <p className="text-muted-foreground font-medium text-sm">{job.company}</p>
+              <p className="text-muted-foreground font-medium text-sm truncate">
+                {job.company}
+              </p>
             </div>
           </div>
         </div>
@@ -103,11 +106,9 @@ export const JobCard = ({ job }: JobCardProps) => {
           )}
         </div>
         
-        
         <p className="text-sm text-muted-foreground leading-relaxed line-clamp-2">
           {job.description}
         </p>
-        
       </CardContent>
       
       <CardFooter className="pt-0">

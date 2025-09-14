@@ -68,6 +68,15 @@ export const Header = () => {
           >
             Post a Job
           </Link>
+          <Link 
+            to="/admin-dashboard" 
+            className={`text-sm font-medium transition-all hover:text-primary ${
+              isActive('/post-job') ? 'text-primary' : 'text-muted-foreground'
+            }`}
+            onClick={() => handleNavClick('Post a Job', '/post-job')}
+          >
+            Admin
+          </Link>
         </nav>
 
         <div className="flex items-center space-x-3">

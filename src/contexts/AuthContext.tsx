@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
@@ -77,27 +77,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     : false;
   const hasViewedMaxTrialPages = trialInfo.trialPageViews >= MAX_TRIAL_PAGES;
 
-  const fetchTrialInfo = async (userId: string) => {
-    try {
-      const { data, error } = await supabase
-        .from('trial_info')
-        .select('*')
-        .eq('user_id', userId)
-        .single();
 
-      if (data) {
-        setTrialInfo({
-          trialStartedAt: data.trial_started_at ? new Date(data.trial_started_at) : null,
-          trialPageViews: data.trial_page_views || 0,
-        });
-      }
-      if (error && error.code !== 'PGRST116') { // Ignore 'single row not found' errors
-        console.error('Error fetching trial info:', error);
-      }
-    } catch (error) {
-      console.error('Error in fetchTrialInfo:', error);
-    }
-  };
 
   // Checkout pending state management
   const setCheckoutPending = (pending: boolean) => {
@@ -121,29 +101,45 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, []);
 
-  const checkSubscription = async () => {
-    if (!session) return;
-    
-    setSubscriptionLoading(true);
-    try {
-      const { data, error } = await supabase.functions.invoke('check-subscription');
-      if (error) throw error;
-      
-      setSubscriptionStatus({
-        subscribed: data.subscribed || false,
-        subscription_tier: data.subscription_tier || null,
-        subscription_end: data.subscription_end || null,
-      });
+  const fetchTrialInfo = async (userId: string) => {
+  try {
+    const { data, error } = await supabase
+      .from('trial_info')
+      .select('*')
+      .eq('user_id', userId)
+      .single();
 
-      if (data.subscribed) {
-        clearCheckoutPending();
-      }
-    } catch (error) {
-      console.error('Error checking subscription:', error);
-    } finally {
-      setSubscriptionLoading(false);
+    if (data) {
+      setTrialInfo({
+        trialStartedAt: data.trial_started_at ? new Date(data.trial_started_at) : null,
+        trialPageViews: data.trial_page_views || 0,
+      });
     }
-  };
+    if (error && error.code !== 'PGRST116') console.error('Error fetching trial info:', error);
+  } catch (error) {
+    console.error('Error in fetchTrialInfo:', error);
+  }
+}
+
+const checkSubscription = async() => {
+  if (!session) return;
+  setSubscriptionLoading(true);
+  try {
+    const { data, error } = await supabase.functions.invoke('check-subscription');
+    if (error) throw error;
+    setSubscriptionStatus({
+      subscribed: data.subscribed || false,
+      subscription_tier: data.subscription_tier || null,
+      subscription_end: data.subscription_end || null,
+    });
+    if (data.subscribed) clearCheckoutPending();
+  } catch (error) {
+    console.error('Error checking subscription:', error);
+  } finally {
+    setSubscriptionLoading(false);
+  }
+}
+
 
   const startTrial = async () => {
     if (!user) return;
@@ -190,29 +186,35 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
- useEffect(() => {
+
+  // Effect to fetch subscription & trial info when session is ready
+useEffect(() => {
+  if (!session?.user) return; // wait for session
+
+  const fetchData = async () => {
+    await Promise.all([
+      checkSubscription(),
+      fetchTrialInfo(session.user.id),
+    ]);
+  };
+
+  fetchData();
+}, [session]);
+
+
+  useEffect(() => {
   const init = async () => {
     const { data: { session } } = await supabase.auth.getSession();
     setSession(session);
     setUser(session?.user ?? null);
-
-    if (session) {
-      await Promise.all([
-        checkSubscription(),
-        fetchTrialInfo(session.user.id)
-      ]);
-    }
-
-    // ✅ Always mark auth as ready
     setAuthReady(true);
     setLoading(false);
   };
 
   init();
 
-  // Listen for future changes
   const { data: { subscription } } = supabase.auth.onAuthStateChange(
-    async (event, session) => {
+    (event, session) => {
       setSession(session);
       setUser(session?.user ?? null);
       setAuthReady(true);
@@ -224,15 +226,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
 
 
+
   const signUp = async (email: string, password: string, displayName?: string) => {
     setLoading(true);
     try {
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
-        options: { data: { display_name: displayName } },
+        options: { emailRedirectTo: `${import.meta.env.VITE_APP_URL}/email-verified`, data: { display_name: displayName } },
       });
       if (error) throw error;
+      
       toast({
         title: "Welcome to BleemHire!",
         description: "Please check your email to verify your account.",
