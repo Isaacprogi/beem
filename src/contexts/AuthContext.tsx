@@ -5,11 +5,6 @@ import { toast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
 import { AuthLoadingScreen } from '@/components/AuthLoadingScreen';
 
-interface TrialInfo {
-  trialStartedAt: Date | null;
-  trialPageViews: number;
-}
-
 interface AuthContextType {
   user: User | null;
   session: Session | null;
@@ -22,18 +17,12 @@ interface AuthContextType {
     subscription_tier: string | null;
     subscription_end: string | null;
   };
-  trialInfo: TrialInfo;
-  isTrialActive: boolean;
-  isTrialExpired: boolean;
-  hasViewedMaxTrialPages: boolean;
   signUp: (email: string, password: string, displayName?: string) => Promise<{ data?: any; error: any }>;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<{ error: any }>;
   updatePassword: (newPassword: string) => Promise<{ error: any }>;
   checkSubscription: () => Promise<void>;
-  startTrial: () => Promise<void>;
-  incrementTrialPageView: () => Promise<void>;
   setCheckoutPending: (pending: boolean) => void;
   clearCheckoutPending: () => void;
 }
@@ -61,21 +50,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     subscription_tier: null as string | null,
     subscription_end: null as string | null,
   });
-  const [trialInfo, setTrialInfo] = useState<TrialInfo>({
-    trialStartedAt: null,
-    trialPageViews: 0,
-  });
-
-  // Trial constants
-  const TRIAL_DURATION_HOURS = 24;
-  const MAX_TRIAL_PAGES = 3;
-
-  // Computed trial states
-  const isTrialActive = !subscriptionStatus.subscribed && trialInfo.trialStartedAt !== null;
-  const isTrialExpired = trialInfo.trialStartedAt
-    ? new Date().getTime() - trialInfo.trialStartedAt.getTime() > TRIAL_DURATION_HOURS * 60 * 60 * 1000
-    : false;
-  const hasViewedMaxTrialPages = trialInfo.trialPageViews >= MAX_TRIAL_PAGES;
 
 
 
@@ -101,26 +75,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, []);
 
-  const fetchTrialInfo = async (userId: string) => {
-  try {
-    const { data, error } = await supabase
-      .from('trial_info')
-      .select('*')
-      .eq('user_id', userId)
-      .single();
-
-    if (data) {
-      setTrialInfo({
-        trialStartedAt: data.trial_started_at ? new Date(data.trial_started_at) : null,
-        trialPageViews: data.trial_page_views || 0,
-      });
-    }
-    if (error && error.code !== 'PGRST116') console.error('Error fetching trial info:', error);
-  } catch (error) {
-    console.error('Error in fetchTrialInfo:', error);
-  }
-}
-
 const checkSubscription = async() => {
   if (!session) return;
   setSubscriptionLoading(true);
@@ -141,52 +95,6 @@ const checkSubscription = async() => {
 }
 
 
-  const startTrial = async () => {
-    if (!user) return;
-
-    try {
-      const { error } = await supabase
-        .from('trial_info')
-        .upsert({ user_id: user.id, trial_started_at: new Date().toISOString(), trial_page_views: 0 }, { onConflict: 'user_id' });
-
-      if (error) throw error;
-
-      await fetchTrialInfo(user.id);
-      
-      toast({
-        title: "Free trial started!",
-        description: "You have 24 hours to browse 3 job pages.",
-      });
-    } catch (error) {
-      console.error('Error starting trial:', error);
-      toast({
-        title: "Error",
-        description: "Failed to start trial. Please try again.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const incrementTrialPageView = async () => {
-    if (!user || !isTrialActive) return;
-
-    try {
-        const newPageViewCount = trialInfo.trialPageViews + 1;
-        const { error } = await supabase
-            .from('trial_info')
-            .update({ trial_page_views: newPageViewCount })
-            .eq('user_id', user.id);
-
-        if (error) throw error;
-
-        setTrialInfo(prev => ({ ...prev, trialPageViews: newPageViewCount }));
-
-    } catch (error) {
-      console.error('Error incrementing trial page view:', error);
-    }
-  };
-
-
   // Effect to fetch subscription & trial info when session is ready
 useEffect(() => {
   if (!session?.user) return; // wait for session
@@ -194,7 +102,6 @@ useEffect(() => {
   const fetchData = async () => {
     await Promise.all([
       checkSubscription(),
-      fetchTrialInfo(session.user.id),
     ]);
   };
 
@@ -322,18 +229,12 @@ useEffect(() => {
     checkoutPending,
     subscriptionLoading,
     subscriptionStatus,
-    trialInfo,
-    isTrialActive,
-    isTrialExpired,
-    hasViewedMaxTrialPages,
     signUp,
     signIn,
     signOut,
     resetPassword,
     updatePassword,
     checkSubscription,
-    startTrial,
-    incrementTrialPageView,
     setCheckoutPending,
     clearCheckoutPending,
   };

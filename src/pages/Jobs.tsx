@@ -68,11 +68,6 @@ const JobCardSkeleton = () => (
 export const Jobs = () => {
   const navigate = useNavigate();
   const {
-    isTrialActive,
-    hasViewedMaxTrialPages,
-    trialInfo,
-    startTrial,
-    incrementTrialPageView,
     subscriptionStatus,
   } = useAuth();
 
@@ -141,29 +136,19 @@ export const Jobs = () => {
 
   const handlePageChange = async (page: number) => {
     if (page >= 1 && page <= totalPages) {
-      setCurrentPage(page);
-      if (isTrialActive && !hasViewedMaxTrialPages) {
-        await incrementTrialPageView();
+      if (!subscriptionStatus.subscribed && page > 1) {
+        navigate("/pricing");
+        return;
       }
+      setCurrentPage(page);
     }
   };
 
-  const handleTrialClick = async () => {
-    if (!isTrialActive && !trialInfo?.trialStartedAt) {
-      await startTrial();
-    } else {
-      navigate("/pricing");
-    }
+  const handleUpgradeClick = () => {
+    navigate("/pricing");
   };
 
-  const shouldBlurContent = isTrialActive && hasViewedMaxTrialPages;
-
-  // Calculate remaining trial time in hours
-  const getRemainingTime = () => {
-    if (!isTrialActive || !trialInfo?.trialStartedAt) return 0;
-    const elapsed = Date.now() - new Date(trialInfo.trialStartedAt).getTime();
-    return Math.max(0, 24 - Math.floor(elapsed / (1000 * 60 * 60)));
-  };
+  const shouldBlurContent = !subscriptionStatus.subscribed && currentPage > 1;
 
   return (
     <div className="min-h-screen bg-background">
@@ -262,44 +247,6 @@ export const Jobs = () => {
           </Card>
         </div>
       </section>
-
-      {/* Trial Status */}
-      {isTrialActive && (
-        <section className="py-4 bg-muted/30 border-b">
-          <div className="container">
-            <Card className="bg-gradient-surface border-primary/20">
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-2 text-sm">
-                      <Eye className="h-4 w-4 text-primary" />
-                      <span className="font-medium">Trial Active:</span>
-                      <span className="text-muted-foreground">
-                        {trialInfo.trialPageViews}/3 pages viewed
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm">
-                      <Timer className="h-4 w-4 text-primary" />
-                      <span className="font-medium">Time left:</span>
-                      <span className="text-muted-foreground">
-                        {getRemainingTime()}h remaining
-                      </span>
-                    </div>
-                  </div>
-                  {hasViewedMaxTrialPages && (
-                    <Badge
-                      variant="outline"
-                      className="text-orange-600 border-orange-200"
-                    >
-                      Trial limit reached
-                    </Badge>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </section>
-      )}
 
       {/* Job Stats */}
       <section className="py-8 border-b">
@@ -408,15 +355,15 @@ export const Jobs = () => {
               <Card className="max-w-md mx-auto bg-gradient-surface border-0 shadow-xl">
                 <CardContent className="p-8 text-center">
                   <h3 className="text-xl font-semibold mb-4">
-                    Trial Limit Reached
+                    Upgrade to View More
                   </h3>
                   <p className="text-muted-foreground mb-6">
-                    You've viewed 3 job pages during your free trial. Upgrade to
-                    continue browsing visa-sponsored jobs.
+                    You've reached the free limit. Upgrade to a premium plan to
+                    view all jobs.
                   </p>
                   <Button
                     className="w-full bg-gradient-primary hover:shadow-glow transition-all"
-                    onClick={handleTrialClick}
+                    onClick={handleUpgradeClick}
                   >
                     Upgrade to Premium
                   </Button>
@@ -424,29 +371,6 @@ export const Jobs = () => {
               </Card>
             </div>
           )}
-
-          <div className="text-center mt-16">
-            <Card className="max-w-md mx-auto bg-gradient-surface border-0 shadow-lg">
-              {isTrialActive && isTrialExpired && (
-                <>
-                  <CardContent className="p-8 text-center">
-                    <h3 className="text-xl font-semibold mb-4">
-                      Start Your Free Trial
-                    </h3>
-                    <p className="text-muted-foreground mb-6">
-                      Get 24 hours of free access to browse visa-sponsored jobs
-                    </p>
-                    <Button
-                      className="w-full bg-gradient-primary hover:shadow-glow transition-all"
-                      onClick={handleTrialClick}
-                    >
-                      Start 24hr Free Trial
-                    </Button>
-                  </CardContent>
-                </>
-              )}
-            </Card>
-          </div>
         </div>
       </section>
       <Footer />

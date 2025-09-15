@@ -11,9 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
 export const PricingPage = () => {
-  const { isTrialActive, isTrialExpired, startTrial, user } = useAuth();
-
-  const trialComplete = !isTrialActive && !isTrialExpired;
+  const { user } = useAuth();
 
   const { toast } = useToast();
   const [isCreatingCheckout, setIsCreatingCheckout] = useState(false);
@@ -44,11 +42,6 @@ export const PricingPage = () => {
 
   const faqs = [
     {
-      question: "How does the 24-hour free trial work?",
-      answer:
-        "Enjoy full access to browse up to 45 jobs (3 pages of 15 jobs each) for 24 hours — no card details required. After the trial ends, you can choose to upgrade to a paid plan for unlimited access.",
-    },
-    {
       question: "Are these real job opportunities?",
       answer:
         "Yes! Every job is verified and comes from legitimate employers actively seeking to sponsor visas for international candidates.",
@@ -72,10 +65,6 @@ export const PricingPage = () => {
         {/* Hero Section */}
         <section className="py-16 bg-gradient-glow">
           <div className="container text-center">
-            <Badge className="mb-6 bg-gradient-primary text-primary-foreground px-4 py-2">
-              <Clock className="h-4 w-4 mr-2" />
-              24-Hour Free Trial
-            </Badge>
             <h1 className="text-4xl lg:text-5xl font-bold mb-6">
               Unlock Your Career
               <span className="block bg-gradient-primary bg-clip-text text-transparent mt-2">
