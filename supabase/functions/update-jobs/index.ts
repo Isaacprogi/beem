@@ -66,6 +66,7 @@ serve(async (req) => {
 
         return {
           user_id: SYSTEM_USER_ID,
+          system: true, 
           title: job.title,
           company: job.organization || null,
           country: Array.isArray(job.countries_derived) ? job.countries_derived[0] : null,

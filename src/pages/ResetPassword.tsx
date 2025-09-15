@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContext';
-import { useScrollTracking } from '@/hooks/useScrollTracking';
 
 export const ResetPassword = () => {
   const [password, setPassword] = useState('');
@@ -13,8 +12,6 @@ export const ResetPassword = () => {
   const [searchParams] = useSearchParams();
   const { updatePassword, loading } = useAuth();
   const navigate = useNavigate();
-
-  useScrollTracking('Reset Password');
 
   useEffect(() => {
     // Check if we have the necessary tokens from the URL
