@@ -16,9 +16,6 @@ import { useNavigate } from "react-router-dom";
 
 export const Pricing = () => {
   const {
-    isTrialActive,
-    isTrialExpired,
-    startTrial,
     user,
     subscriptionStatus,
   } = useAuth();
@@ -36,16 +33,6 @@ export const Pricing = () => {
     "Advanced search & filters",
     "Priority customer support",
   ];
-
-  // Button logic based on trial/subscription state
-  const handleTrialClick = async () => {
-    if (!isTrialActive && !isTrialExpired) {
-      await startTrial();
-      return;
-    } else {
-      handleCheckout();
-    }
-  };
 
   const handleCheckout = async () => {
     if (!user) {
@@ -99,23 +86,14 @@ export const Pricing = () => {
   const navigate = useNavigate()
 
   if (!user) {
-    buttonText = "Sign in to start trial";
+    buttonText = "Sign in to Upgrade";
     buttonAction = ()=>{navigate('/sign-in')};
   } else if (subscriptionStatus.subscribed) {
     buttonText = "You’re subscribed! See jobs";
     buttonAction = () => {navigate('/jobs')};
-  } else if (
-    subscriptionStatus.subscription_end &&
-    new Date(subscriptionStatus.subscription_end) < new Date()
-  ) {
-    buttonText = "Renew Subscription";
-    buttonAction = handleCheckout;
-  } else if (!isTrialActive && isTrialExpired) {
+  } else {
     buttonText = "Upgrade to Premium";
     buttonAction = handleCheckout;
-  } else {
-    buttonText = "Start 24hr Free Trial";
-    buttonAction = handleTrialClick;
   }
 
   return (
@@ -149,7 +127,7 @@ export const Pricing = () => {
               </div>
               <div className="flex items-center justify-center gap-2 mt-3 text-sm text-muted-foreground">
                 <Clock className="h-4 w-4" />
-                <span>24-hour free trial • Cancel anytime</span>
+                <span>Cancel anytime</span>
               </div>
             </CardHeader>
 
