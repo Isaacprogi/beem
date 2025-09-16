@@ -24,6 +24,7 @@ import JobsTable from "./components/dashboard/JobsTable";
 import EmailVerified from "./pages/EmailVerified";
 import CheckEmail from "./pages/CheckEmail";
 import { Overview } from "./components/dashboard/Overview";
+import { ProfilePage } from "./pages/Profile";
 
 const queryClient = new QueryClient();
 
@@ -54,6 +55,7 @@ const AppContent = () => {
             </ProtectedRoute>
           } />
           <Route path="/pricing" element={<PricingPage />} />
+          <Route path="/profile/:id" element={<ProfilePage />} />
           <Route path="/admin-dashboard" element={<Dashboard />} >
              <Route index element={<Overview />} />
              <Route path="users" element={<Users />} />

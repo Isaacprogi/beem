@@ -18,9 +18,18 @@ export const Pricing = () => {
   const {
     user,
     subscriptionStatus,
+    canStartTrial,
+    startTrial,
+    isTrialRunning,
+    trialInfo,
+    trailDurationHours,
+    subscriptionLoading,
   } = useAuth();
   const { toast } = useToast();
   const [isCreatingCheckout, setIsCreatingCheckout] = useState(false);
+  const navigate = useNavigate();
+
+  const MAX_TRIAL_PAGES = 3; // Keep in sync with AuthContext
 
   // Features list
   const features = [
@@ -34,6 +43,7 @@ export const Pricing = () => {
     "Priority customer support",
   ];
 
+  // Handle Stripe checkout
   const handleCheckout = async () => {
     if (!user) {
       toast({
@@ -68,7 +78,7 @@ export const Pricing = () => {
         window.open(response.data.url, "_blank");
       }
     } catch (error) {
-      console.log("Error creating checkout:", error);
+      console.error("Error creating checkout:", error);
       toast({
         title: "Error",
         description: "Failed to create checkout session. Please try again.",
@@ -82,15 +92,22 @@ export const Pricing = () => {
   // Determine button text and action
   let buttonText = "";
   let buttonAction: () => void = () => {};
-
-  const navigate = useNavigate()
+  let buttonDisabled = isCreatingCheckout || subscriptionLoading;
 
   if (!user) {
     buttonText = "Sign in to Upgrade";
-    buttonAction = ()=>{navigate('/sign-in')};
+    buttonAction = () => navigate("/sign-in");
   } else if (subscriptionStatus.subscribed) {
     buttonText = "You’re subscribed! See jobs";
-    buttonAction = () => {navigate('/jobs')};
+    buttonAction = () => navigate("/jobs");
+  } else if (isTrialRunning) {
+    if (trialInfo.trialPageViews < MAX_TRIAL_PAGES) {
+      buttonText = `See Jobs (${trialInfo.trialPageViews}/${MAX_TRIAL_PAGES} pages)`;
+      buttonAction = () => navigate("/jobs");
+    } else {
+      buttonText = "Limit reached! Upgrade to Premium";
+      buttonAction = handleCheckout;
+    }
   } else {
     buttonText = "Upgrade to Premium";
     buttonAction = handleCheckout;
@@ -149,12 +166,12 @@ export const Pricing = () => {
                 className="w-full bg-gradient-primary hover:shadow-glow transition-all text-lg py-6 h-auto font-semibold"
                 size="lg"
                 onClick={buttonAction}
-                disabled={isCreatingCheckout}
+                disabled={buttonDisabled}
               >
-                {isCreatingCheckout ? (
+                {buttonDisabled ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Creating checkout...
+                    Processing...
                   </>
                 ) : (
                   buttonText

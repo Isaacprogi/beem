@@ -44,8 +44,10 @@ export const PostJob = () => {
     benefits: "",
     yearsExperience: "",
     expiresAt: "",
+    logoFile: null as File | null,
   });
 
+  const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   useEffect(() => {
@@ -72,31 +74,20 @@ export const PostJob = () => {
       setErrors((prev) => ({ ...prev, [field]: "" }));
     };
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setFormData((prev) => ({ ...prev, logoFile: e.target.files![0] }));
+      setLogoPreview(URL.createObjectURL(e.target.files[0]));
+    }
+  };
+
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
 
     if (!formData.company.trim()) newErrors.company = "Company is required";
     if (!formData.role.trim()) newErrors.role = "Job Title / Role is required";
-
-    if (!formData.applicationLink.trim() && !formData.applicationEmail.trim()) {
-      newErrors.applicationLink =
-        "Provide at least an application link or email";
-    }
-
-    if (
-      formData.applicationLink &&
-      !/^https?:\/\//.test(formData.applicationLink)
-    ) {
-      newErrors.applicationLink = "Application link must be a valid URL";
-    }
-
-    if (
-      formData.applicationEmail &&
-      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.applicationEmail)
-    ) {
-      newErrors.applicationEmail = "Application email must be valid";
-    }
-
+    if (!formData.applicationLink.trim())
+      newErrors.applicationLink = "Application link is required";
     if (!formData.country.trim()) newErrors.country = "Country is required";
     if (!formData.location.trim()) newErrors.location = "Location is required";
     if (!formData.type.trim()) newErrors.type = "Job type is required";
@@ -105,15 +96,10 @@ export const PostJob = () => {
     if (!formData.requirements.trim())
       newErrors.requirements = "Requirements are required";
 
-    if (!formData.salaryMin.trim() && !formData.salaryMax.trim())
-      newErrors.salaryRange = "Provide at least min or max salary";
-
-    if (!formData.benefits.trim())
-      newErrors.benefits = "Benefits are required";
-    if (!formData.yearsExperience.trim())
-      newErrors.yearsExperience = "Years of experience is required";
-    if (!formData.expiresAt.trim())
-      newErrors.expiresAt = "Expiration date is required";
+    if ((formData.salaryMin || formData.salaryMax) && !formData.salaryCurrency) {
+      newErrors.salaryCurrency =
+        "Salary currency is required if salary is provided";
+    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -132,7 +118,30 @@ export const PostJob = () => {
       return;
     }
 
-    const expiresAtIso = new Date(formData.expiresAt).toISOString();
+    let logoUrl: string | null = null;
+    if (formData.logoFile) {
+      const fileName = `logos/${Date.now()}_${formData.logoFile.name}`;
+      const { error } = await supabase.storage
+        .from("company-logos")
+        .upload(fileName, formData.logoFile);
+
+      if (error) {
+        toast({
+          title: "Logo Upload Error",
+          description: error.message,
+          variant: "destructive",
+        });
+        return;
+      }
+
+      logoUrl = supabase.storage
+        .from("company-logos")
+        .getPublicUrl(fileName).data.publicUrl;
+    }
+
+    const expiresAtIso = formData.expiresAt
+      ? new Date(formData.expiresAt).toISOString()
+      : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
 
     const salaryRange =
       formData.salaryMin || formData.salaryMax
@@ -146,16 +155,17 @@ export const PostJob = () => {
       system: false,
       title: formData.role,
       company: formData.company,
+      logo_url: logoUrl,
       country: formData.country,
       location: formData.location,
       type: formData.type,
       description: formData.description,
       requirements: formData.requirements,
       salary_range: salaryRange,
-      benefits: formData.benefits,
-      application_url: formData.applicationLink || null,
+      benefits: formData.benefits || null,
+      application_url: formData.applicationLink,
       application_email: formData.applicationEmail || null,
-      years_experience: formData.yearsExperience,
+      years_experience: formData.yearsExperience || null,
       is_active: true,
       featured: false,
       expires_at: expiresAtIso,
@@ -193,8 +203,7 @@ export const PostJob = () => {
         <div className="container max-w-2xl mx-auto px-4 py-16">
           <div className="text-center mb-12">
             <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
-              Submit a job and get exposure to 25,000+ vetted US and UK job
-              seekers for free.
+              Submit a job and get exposure to 25,000+ vetted US and UK job seekers for free.
             </h1>
           </div>
 
@@ -204,13 +213,31 @@ export const PostJob = () => {
             </h2>
 
             <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Company Logo */}
+              <div className="space-y-2">
+                <Label htmlFor="logoFile">Company Logo (optional)</Label>
+                <Input
+                  id="logoFile"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                />
+                {logoPreview && (
+                  <img
+                    src={logoPreview}
+                    alt="Logo Preview"
+                    className="h-24 w-24 object-contain mt-2 border border-gray-300 rounded"
+                  />
+                )}
+              </div>
+
               {/* Text Inputs */}
               {[
                 { id: "company", label: "Company *", type: "text" },
                 { id: "role", label: "Job Title / Role *", type: "text" },
                 {
                   id: "applicationLink",
-                  label: "Job application link",
+                  label: "Job application link *",
                   type: "url",
                   placeholder: "https://example.com/apply",
                 },
@@ -221,10 +248,10 @@ export const PostJob = () => {
                   placeholder: "hr@example.com",
                 },
                 { id: "location", label: "Location *", type: "text" },
-                { id: "benefits", label: "Benefits *", type: "text" },
+                { id: "benefits", label: "Benefits (optional)", type: "text" },
                 {
                   id: "expiresAt",
-                  label: "Expiration Date *",
+                  label: "Expiration Date (optional)",
                   type: "date",
                 },
               ].map((field) => (
@@ -263,9 +290,9 @@ export const PostJob = () => {
                 )}
               </div>
 
-              {/* Salary */}
+              {/* Salary Range */}
               <div className="space-y-2">
-                <Label>Salary Range *</Label>
+                <Label>Salary Range (optional)</Label>
                 <div className="grid grid-cols-4 gap-2">
                   <Select
                     value={formData.salaryCurrency}
@@ -306,8 +333,8 @@ export const PostJob = () => {
                     </SelectContent>
                   </Select>
                 </div>
-                {errors.salaryRange && (
-                  <p className="text-sm text-red-500">{errors.salaryRange}</p>
+                {errors.salaryCurrency && (
+                  <p className="text-sm text-red-500">{errors.salaryCurrency}</p>
                 )}
               </div>
 
@@ -336,7 +363,9 @@ export const PostJob = () => {
 
               {/* Years of Experience */}
               <div className="space-y-2">
-                <Label htmlFor="yearsExperience">Years of Experience *</Label>
+                <Label htmlFor="yearsExperience">
+                  Years of Experience (optional)
+                </Label>
                 <Select
                   value={formData.yearsExperience}
                   onValueChange={handleChange("yearsExperience")}
@@ -351,9 +380,6 @@ export const PostJob = () => {
                     <SelectItem value="10+">10+ years</SelectItem>
                   </SelectContent>
                 </Select>
-                {errors.yearsExperience && (
-                  <p className="text-sm text-red-500">{errors.yearsExperience}</p>
-                )}
               </div>
 
               {/* Description */}

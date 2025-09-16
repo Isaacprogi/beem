@@ -37,7 +37,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { Database } from "@/integrations/supabase/types";
 
-
 type Job = Database["public"]["Tables"]["jobs"]["Row"];
 
 const JOBS_PER_PAGE = 15;
@@ -68,7 +67,15 @@ const JobCardSkeleton = () => (
 export const Jobs = () => {
   const navigate = useNavigate();
   const {
+    canStartTrial,
+    isTrialRunning,
+    isTrialExpired,
+    hasViewedMaxTrialPages,
+    trialInfo,
+    startTrial,
+    incrementTrialPageView,
     subscriptionStatus,
+    trailDurationHours,
   } = useAuth();
 
   const [jobs, setJobs] = useState<Job[]>([]);
@@ -78,8 +85,42 @@ export const Jobs = () => {
   const [locationFilter, setLocationFilter] = useState("");
   const [yearsExperienceFilter, setYearsExperienceFilter] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [showBlurModal, setShowBlurModal] = useState(false);
 
-  // Fetch jobs from Supabase whenever filters or page change
+  const [searchInput, setSearchInput] = useState("");
+  const [locationInput, setLocationInput] = useState("");
+  const [yearsExperienceInput, setYearsExperienceInput] = useState("");
+
+  const [appliedSearch, setAppliedSearch] = useState("");
+  const [appliedLocation, setAppliedLocation] = useState("");
+  const [appliedYearsExperience, setAppliedYearsExperience] = useState("");
+
+  const getRemainingTime = () => {
+    if (!isTrialRunning || !trialInfo.trialStartedAt) return 0;
+
+    const elapsedMs = Date.now() - new Date(trialInfo.trialStartedAt).getTime();
+    const remainingMs = trailDurationHours * 60 * 60 * 1000 - elapsedMs;
+
+    if (remainingMs <= 0) return 0;
+
+    const remainingHours = Math.floor(remainingMs / (1000 * 60 * 60));
+    const remainingMinutes = Math.floor(
+      (remainingMs % (1000 * 60 * 60)) / (1000 * 60)
+    );
+
+    return `${remainingHours}h ${remainingMinutes}m`;
+  };
+
+  const handleTrialClick = async () => {
+    if (canStartTrial) {
+      await startTrial();
+    } else {
+      navigate("/pricing");
+    }
+  };
+
+  //
+
   useEffect(() => {
     const fetchJobs = async () => {
       setIsLoading(true);
@@ -94,16 +135,15 @@ export const Jobs = () => {
             currentPage * JOBS_PER_PAGE - 1
           );
 
-        if (searchTerm) {
-          query = query.ilike("title", `%${searchTerm}%`);
+        if (appliedSearch) {
+          query = query.ilike("title", `%${appliedSearch}%`);
         }
 
-        if (locationFilter) {
-          query = query.eq("country", locationFilter);
+        if (appliedLocation) {
+          query = query.eq("country", appliedLocation);
         }
 
-        if (yearsExperienceFilter && yearsExperienceFilter !== "all") {
-          // Example filtering based on min experience
+        if (appliedYearsExperience && appliedYearsExperience !== "all") {
           const minExpMap: Record<string, number> = {
             "0-2": 0,
             "2-5": 2,
@@ -112,12 +152,11 @@ export const Jobs = () => {
           };
           query = query.gte(
             "years_experience_min",
-            minExpMap[yearsExperienceFilter]
+            minExpMap[appliedYearsExperience]
           );
         }
 
         const { data, count, error } = await query;
-
         if (error) throw error;
 
         setJobs(data || []);
@@ -130,25 +169,31 @@ export const Jobs = () => {
     };
 
     fetchJobs();
-  }, [currentPage, searchTerm, locationFilter, yearsExperienceFilter]);
+  }, [currentPage, appliedSearch, appliedLocation, appliedYearsExperience]);
 
   const totalPages = Math.ceil(totalJobs / JOBS_PER_PAGE);
 
   const handlePageChange = async (page: number) => {
-    if (page >= 1 && page <= totalPages) {
-      if (!subscriptionStatus.subscribed && page > 1) {
-        navigate("/pricing");
-        return;
-      }
+    if (page < 1 || page > totalPages) return;
+
+    // If trial is running and user reached max pages
+    if (isTrialRunning && hasViewedMaxTrialPages) {
       setCurrentPage(page);
+      setShowBlurModal(true);
+      return; // Don't allow changing pages
+    }
+
+    setCurrentPage(page);
+
+    // Increment trial page views for trial users
+    if (isTrialRunning && !hasViewedMaxTrialPages) {
+      await incrementTrialPageView();
     }
   };
 
   const handleUpgradeClick = () => {
     navigate("/pricing");
   };
-
-  const shouldBlurContent = !subscriptionStatus.subscribed && currentPage > 1;
 
   return (
     <div className="min-h-screen bg-background">
@@ -179,14 +224,14 @@ export const Jobs = () => {
                   <Input
                     placeholder="Search jobs, companies, skills, or cities..."
                     className="pl-10 h-12 border-border/50"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
+                    value={searchInput}
+                    onChange={(e) => setSearchInput(e.target.value)}
                   />
                 </div>
                 <div className="flex gap-3 flex-wrap">
                   <Select
-                    value={locationFilter}
-                    onValueChange={setLocationFilter}
+                    value={locationInput}
+                    onValueChange={setLocationInput}
                   >
                     <SelectTrigger className="w-[140px] h-12">
                       <MapPin className="h-4 w-4 mr-2" />
@@ -197,23 +242,9 @@ export const Jobs = () => {
                       <SelectItem value="United States">🇺🇸 USA</SelectItem>
                     </SelectContent>
                   </Select>
-                  {/* <Select>
-                    <SelectTrigger className="w-[180px] h-12">
-                      <GraduationCap className="h-4 w-4 mr-2" />
-                      <SelectValue placeholder="Education" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="high-school">High School</SelectItem>
-                      <SelectItem value="associates">Associate's</SelectItem>
-                      <SelectItem value="bachelors">Bachelor's</SelectItem>
-                      <SelectItem value="masters">Master's</SelectItem>
-                      <SelectItem value="doctorate">Doctorate</SelectItem>
-                      <SelectItem value="other">Other</SelectItem>
-                    </SelectContent>
-                  </Select> */}
                   <Select
-                    value={yearsExperienceFilter}
-                    onValueChange={setYearsExperienceFilter}
+                    value={yearsExperienceInput}
+                    onValueChange={setYearsExperienceInput}
                   >
                     <SelectTrigger className="w-[180px] h-12">
                       <Clock className="h-4 w-4 mr-2" />
@@ -227,26 +258,76 @@ export const Jobs = () => {
                       <SelectItem value="all">All Jobs</SelectItem>
                     </SelectContent>
                   </Select>
-                  {/* <Select value={experienceLevelFilter} onValueChange={setExperienceLevelFilter}>
+                  <Select
+                    value={yearsExperienceInput}
+                    onValueChange={setYearsExperienceInput}
+                  >
                     <SelectTrigger className="w-[180px] h-12">
-                      <Briefcase className="h-4 w-4 mr-2" />
-                      <SelectValue placeholder="Experience Level" />
+                      <Clock className="h-4 w-4 mr-2" />
+                      <SelectValue placeholder="Years Experience" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="internship">Internship</SelectItem>
-                      <SelectItem value="entry-level">Entry level</SelectItem>
-                      <SelectItem value="associate">Associate</SelectItem>
-                      <SelectItem value="senior-associate">Senior Associate</SelectItem>
-                      <SelectItem value="director">Director</SelectItem>
-                      <SelectItem value="executive">Executive</SelectItem>
+                      <SelectItem value="full-time">Full time</SelectItem>
+                      <SelectItem value="part-time">Part time</SelectItem>
+                      <SelectItem value="intern">Internship</SelectItem>
+                      <SelectItem value="contractor">Contract</SelectItem>
+                      <SelectItem value="all">All Types</SelectItem>
                     </SelectContent>
-                  </Select> */}
+                  </Select>
                 </div>
               </div>
+              <Button
+                className="h-12 w-full mt-4 bg-gradient-primary hover:shadow-glow transition-all"
+                onClick={() => {
+                  setAppliedSearch(searchInput);
+                  setAppliedLocation(locationInput);
+                  setAppliedYearsExperience(yearsExperienceInput);
+                  setCurrentPage(1); // reset to page 1
+                }}
+              >
+                Apply Filters
+              </Button>
             </CardContent>
           </Card>
         </div>
       </section>
+
+      {isTrialRunning && (
+        <section className="py-4 bg-muted/30 border-b">
+          <div className="container">
+            <Card className="bg-gradient-surface border-primary/20">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2 text-sm">
+                      <Eye className="h-4 w-4 text-primary" />
+                      <span className="font-medium">Trial Active:</span>
+                      <span className="text-muted-foreground">
+                        {trialInfo.trialPageViews}/3 pages viewed
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <Timer className="h-4 w-4 text-primary" />
+                      <span className="font-medium">Time left:</span>
+                      <span className="text-muted-foreground">
+                        {getRemainingTime()}h remaining
+                      </span>
+                    </div>
+                  </div>
+                  {hasViewedMaxTrialPages && (
+                    <Badge
+                      variant="outline"
+                      className="text-orange-600 border-orange-200"
+                    >
+                      Trial limit reached
+                    </Badge>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </section>
+      )}
 
       {/* Job Stats */}
       <section className="py-8 border-b">
@@ -294,7 +375,7 @@ export const Jobs = () => {
         <div className="container">
           <div
             className={`grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 ${
-              shouldBlurContent ? "blur-sm" : ""
+              showBlurModal ? "blur-sm" : ""
             }`}
           >
             {isLoading
@@ -308,49 +389,86 @@ export const Jobs = () => {
                 ))}
           </div>
 
-          {totalPages > 1 && (
-            <div className="mt-8 flex justify-center">
-              <Pagination>
-                <PaginationContent>
-                  <PaginationItem>
-                    <PaginationPrevious
-                      onClick={() => handlePageChange(currentPage - 1)}
-                      className={
-                        currentPage === 1
-                          ? "pointer-events-none opacity-50"
-                          : "cursor-pointer"
-                      }
-                    />
-                  </PaginationItem>
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                    (page) => (
-                      <PaginationItem key={page}>
-                        <PaginationLink
-                          onClick={() => handlePageChange(page)}
-                          isActive={page === currentPage}
-                          className="cursor-pointer"
-                        >
-                          {page}
-                        </PaginationLink>
-                      </PaginationItem>
-                    )
-                  )}
-                  <PaginationItem>
-                    <PaginationNext
-                      onClick={() => handlePageChange(currentPage + 1)}
-                      className={
-                        currentPage === totalPages
-                          ? "pointer-events-none opacity-50"
-                          : "cursor-pointer"
-                      }
-                    />
-                  </PaginationItem>
-                </PaginationContent>
-              </Pagination>
-            </div>
-          )}
+          {(isTrialRunning || subscriptionStatus.subscribed) &&
+            totalPages > 1 && (
+              <div className="mt-8 flex justify-center">
+                <Pagination>
+                  <PaginationContent>
+                    {/* Trial users: only 3 pages + More */}
+                    {isTrialRunning ? (
+                      <>
+                        {Array.from(
+                          { length: Math.min(3, totalPages) },
+                          (_, i) => i + 1
+                        ).map((page) => (
+                          <PaginationItem key={page}>
+                            <PaginationLink
+                              onClick={() => handlePageChange(page)}
+                              isActive={page === currentPage}
+                              className="cursor-pointer"
+                            >
+                              {page}
+                            </PaginationLink>
+                          </PaginationItem>
+                        ))}
+                        {totalPages > 3 && (
+                          <PaginationItem>
+                            <PaginationLink
+                              onClick={() => setShowBlurModal(true)}
+                              className="cursor-pointer font-bold"
+                            >
+                              More
+                            </PaginationLink>
+                          </PaginationItem>
+                        )}
+                      </>
+                    ) : (
+                      // Subscribers: full pagination with Prev/Next
+                      <>
+                        <PaginationItem>
+                          <PaginationPrevious
+                            onClick={() => handlePageChange(currentPage - 1)}
+                            className={
+                              currentPage === 1
+                                ? "pointer-events-none opacity-50"
+                                : "cursor-pointer"
+                            }
+                          />
+                        </PaginationItem>
 
-          {shouldBlurContent && (
+                        {Array.from(
+                          { length: totalPages },
+                          (_, i) => i + 1
+                        ).map((page) => (
+                          <PaginationItem key={page}>
+                            <PaginationLink
+                              onClick={() => handlePageChange(page)}
+                              isActive={page === currentPage}
+                              className="cursor-pointer"
+                            >
+                              {page}
+                            </PaginationLink>
+                          </PaginationItem>
+                        ))}
+
+                        <PaginationItem>
+                          <PaginationNext
+                            onClick={() => handlePageChange(currentPage + 1)}
+                            className={
+                              currentPage === totalPages
+                                ? "pointer-events-none opacity-50"
+                                : "cursor-pointer"
+                            }
+                          />
+                        </PaginationItem>
+                      </>
+                    )}
+                  </PaginationContent>
+                </Pagination>
+              </div>
+            )}
+
+          {showBlurModal && (
             <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-50">
               <Card className="max-w-md mx-auto bg-gradient-surface border-0 shadow-xl">
                 <CardContent className="p-8 text-center">
@@ -366,6 +484,13 @@ export const Jobs = () => {
                     onClick={handleUpgradeClick}
                   >
                     Upgrade to Premium
+                  </Button>
+                  <Button
+                    className="w-full mt-3 border border-border hover:bg-background/20"
+                    variant="outline"
+                    onClick={() => setShowBlurModal(false)}
+                  >
+                    Close
                   </Button>
                 </CardContent>
               </Card>

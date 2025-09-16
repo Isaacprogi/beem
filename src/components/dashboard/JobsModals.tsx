@@ -1,5 +1,6 @@
+// ===== COMPONENTS/MODAL.TSX =====
+import { createPortal } from "react-dom";
 import { X } from 'lucide-react';
-import { ChevronLeft,Search,MoreVertical,Filter,ChevronRight } from 'lucide-react';
 
 interface ModalProps {
   isOpen: boolean;
@@ -42,8 +43,8 @@ export const Modal = ({ isOpen, onClose, children, title, size = 'md' }: ModalPr
 
 // ===== COMPONENTS/JOB-DROPDOWN.TSX =====
 import { createPortal } from "react-dom";
-import { Eye, Edit, } from 'lucide-react';
-
+import { Eye, Edit, CheckCircle, XCircle, Trash2 } from 'lucide-react';
+import { Job } from '../types/job';
 
 interface DropdownProps {
   job: Job;
@@ -105,6 +106,8 @@ export const JobDropdown = ({ job, buttonRect, onClose, onView, onEdit, onDelete
 
 // ===== COMPONENTS/VIEW-JOB-MODAL.TSX =====
 import { Building2, MapPin, Briefcase, Star, Calendar, DollarSign, Users, ExternalLink, Mail, CheckCircle, XCircle } from 'lucide-react';
+import { Modal } from './Modal';
+import { Job } from '../types/job';
 
 interface ViewJobModalProps {
   job: Job | null;
@@ -266,7 +269,9 @@ export const ViewJobModal = ({ job, isOpen, onClose }: ViewJobModalProps) => {
 
 // ===== COMPONENTS/EDIT-JOB-MODAL.TSX =====
 import { useEffect, useState } from 'react';
-import { Save} from 'lucide-react';
+import { Save, AlertTriangle } from 'lucide-react';
+import { Modal } from './Modal';
+import { Job } from '../types/job';
 
 interface EditJobModalProps {
   job: Job | null;
@@ -552,6 +557,8 @@ export const EditJobModal = ({ job, isOpen, onClose, onSave }: EditJobModalProps
 
 // ===== COMPONENTS/DELETE-JOB-MODAL.TSX =====
 import { AlertTriangle, Trash2 } from 'lucide-react';
+import { Modal } from './Modal';
+import { Job } from '../types/job';
 
 interface DeleteJobModalProps {
   job: Job | null;
@@ -595,6 +602,10 @@ export const DeleteJobModal = ({ job, isOpen, onClose, onConfirm }: DeleteJobMod
   );
 };
 
+// ===== COMPONENTS/TOGGLE-STATUS-MODAL.TSX =====
+import { AlertTriangle, CheckCircle, XCircle } from 'lucide-react';
+import { Modal } from './Modal';
+import { Job } from '../types/job';
 
 interface ToggleStatusModalProps {
   job: Job | null;
@@ -679,615 +690,26 @@ export interface FilterState {
 }
 
 // ===== MAIN COMPONENT: JOBS-TABLE.TSX =====
+import { useEffect, useState } from "react";
+import { 
+  Briefcase, 
+  Building2, 
+  CheckCircle, 
+  XCircle, 
+  Filter, 
+  Search,
+  ChevronLeft,
+  ChevronRight,
+  MapPin,
+  DollarSign,
+  Calendar,
+  Star,
+  Mail,
+  ExternalLink,
+  X,
+  MoreVertical
+} from 'lucide-react';
 import { supabase } from "@/integrations/supabase/client";
 
 // Import all the components (you'll need to adjust paths based on your structure)
-// import { JobDropdown } from './components/JobDropdown';
-// import { ViewJobModal } from './components/ViewJobModal';
-// import { EditJobModal } from './components/EditJobModal';
-// import { DeleteJobModal } from './components/DeleteJobModal';
-// import { ToggleStatusModal } from './components/ToggleStatusModal';
-// import { Job, FilterState } from './types/job';
-
-const JobsTable = () => {
-  const [jobs, setJobs] = useState<Job[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalCount, setTotalCount] = useState(0);
-  const [itemsPerPage] = useState(10);
-  const [showFilters, setShowFilters] = useState(false);
-  const [dropdownJob, setDropdownJob] = useState<{ job: Job; rect: DOMRect } | null>(null);
-  
-  const [filters, setFilters] = useState<FilterState>({
-    search: '',
-    is_active: '',
-    type: '',
-    featured: '',
-    country: '',
-    years_experience: ''
-  });
-
-  // Modal states
-  const [viewModal, setViewModal] = useState<{ isOpen: boolean; job: Job | null }>({ isOpen: false, job: null });
-  const [editModal, setEditModal] = useState<{ isOpen: boolean; job: Job | null }>({ isOpen: false, job: null });
-  const [deleteModal, setDeleteModal] = useState<{ isOpen: boolean; job: Job | null }>({ isOpen: false, job: null });
-  const [statusModal, setStatusModal] = useState<{ isOpen: boolean; job: Job | null }>({ isOpen: false, job: null });
-
-  // Available filter options
-  const jobTypes = ['full-time', 'part-time', 'contractor', 'freelance', 'intern'];
-  const countries = ['United States',  'United Kingdom'];
-
-  useEffect(() => {
-    fetchJobs();
-  }, [currentPage, filters]);
-
-  useEffect(() => {
-    const handleClickOutside = () => {
-      setDropdownJob(null);
-    };
-
-    if (dropdownJob) {
-      document.addEventListener("click", handleClickOutside);
-      return () => document.removeEventListener("click", handleClickOutside);
-    }
-  }, [dropdownJob]);
-
-  const fetchJobs = async () => {
-    setLoading(true);
-    
-    try {
-      let query = supabase
-        .from("jobs")
-        .select(`
-          id,
-          title,
-          company,
-          country,
-          location,
-          type,
-          description,
-          requirements,
-          salary_range,
-          benefits,
-          application_url,
-          application_email,
-          years_experience,
-          is_active,
-          featured,
-          expires_at,
-          posted_at,
-          created_at,
-          imported_at,
-          updated_at
-        `, { count: 'exact' });
-
-      // Apply filters
-      if (filters.search) {
-        query = query.or(`title.ilike.%${filters.search}%,company.ilike.%${filters.search}%,description.ilike.%${filters.search}%`);
-      }
-      
-      if (filters.is_active !== '') {
-        query = query.eq('is_active', filters.is_active === 'true');
-      }
-      
-      if (filters.type) {
-        query = query.eq('type', filters.type);
-      }
-      
-      if (filters.featured !== '') {
-        query = query.eq('featured', filters.featured === 'true');
-      }
-      
-      if (filters.country) {
-        query = query.eq('country', filters.country);
-      }
-      
-      if (filters.years_experience) {
-        query = query.eq('years_experience', filters.years_experience);
-      }
-
-      // Apply pagination
-      const from = (currentPage - 1) * itemsPerPage;
-      const to = from + itemsPerPage - 1;
-      
-      query = query
-        .range(from, to)
-        .order("created_at", { ascending: false });
-
-      const { data, error, count } = await query;
-      
-      if (error) {
-        console.error('Error fetching jobs:', error);
-        alert('Error fetching jobs. Please try again.');
-      } else {
-        setJobs(data || []);
-        setTotalCount(count || 0);
-      }
-    } catch (error) {
-      console.error('Error fetching jobs:', error);
-      alert('Error fetching jobs. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleFilterChange = (key: keyof FilterState, value: string) => {
-    setFilters(prev => ({ ...prev, [key]: value }));
-    setCurrentPage(1);
-  };
-
-  const clearFilters = () => {
-    setFilters({
-      search: '',
-      is_active: '',
-      type: '',
-      featured: '',
-      country: '',
-      years_experience: ''
-    });
-    setCurrentPage(1);
-  };
-
-  const handleDropdownClick = (job: Job, e: React.MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation();
-    const rect = e.currentTarget.getBoundingClientRect();
-    setDropdownJob(dropdownJob?.job.id === job.id ? null : { job, rect });
-  };
-
-  const closeDropdown = () => setDropdownJob(null);
-
-  const handleViewJob = (job: Job) => {
-    setViewModal({ isOpen: true, job });
-  };
-
-  const handleEditJob = (job: Job) => {
-    setEditModal({ isOpen: true, job });
-  };
-
-  const handleDeleteJob = (job: Job) => {
-    setDeleteModal({ isOpen: true, job });
-  };
-
-  const handleToggleStatus = (job: Job) => {
-    setStatusModal({ isOpen: true, job });
-  };
-
-  const handleSaveJob = async (job: Job, formData: Partial<Job>) => {
-    try {
-      const { error } = await supabase
-        .from("jobs")
-        .update(formData)
-        .eq("id", job.id);
-
-      if (error) {
-        console.error("Error updating job:", error);
-        alert("Error updating job. Please try again.");
-      } else {
-        await fetchJobs();
-        alert("Job updated successfully!");
-      }
-    } catch (error) {
-      console.error("Error updating job:", error);
-      alert("Error updating job. Please try again.");
-    }
-  };
-
-  const confirmDeleteJob = async (job: Job) => {
-    try {
-      const { error } = await supabase
-        .from("jobs")
-        .delete()
-        .eq("id", job.id);
-
-      if (error) {
-        console.error("Error deleting job:", error);
-        alert("Error deleting job. Please try again.");
-      } else {
-        await fetchJobs();
-        setDeleteModal({ isOpen: false, job: null });
-        alert("Job deleted successfully!");
-      }
-    } catch (error) {
-      console.error("Error deleting job:", error);
-      alert("Error deleting job. Please try again.");
-    }
-  };
-
-  const confirmToggleStatus = async (job: Job) => {
-    try {
-      const { error } = await supabase
-        .from("jobs")
-        .update({ is_active: !job.is_active })
-        .eq("id", job.id);
-
-      if (error) {
-        console.error("Error updating job status:", error);
-        alert("Error updating job status. Please try again.");
-      } else {
-        await fetchJobs();
-        setStatusModal({ isOpen: false, job: null });
-        alert(`Job ${job.is_active ? 'deactivated' : 'activated'} successfully!`);
-      }
-    } catch (error) {
-      console.error("Error updating job status:", error);
-      alert("Error updating job status. Please try again.");
-    }
-  };
-
-  const totalPages = Math.ceil(totalCount / itemsPerPage);
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
-  };
-
-  const truncateText = (text: string, maxLength: number = 100) => {
-    return text && text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
-  };
-
-  return (
-    <div className="p-8">
-      <div className="mb-6">
-        <h2 className="text-3xl font-bold text-slate-800 mb-2">Jobs Management</h2>
-        <p className="text-slate-600">Monitor and manage job postings ({totalCount} total)</p>
-      </div>
-      
-      {/* Filters Section */}
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 mb-6">
-        <div className="p-4 border-b border-slate-200">
-          <button
-            onClick={() => setShowFilters(!showFilters)}
-            className="flex items-center gap-2 text-slate-700 hover:text-slate-900"
-          >
-            <Filter className="w-4 h-4" />
-            Filters
-            {Object.values(filters).some(v => v !== '') && (
-              <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs">
-                Active
-              </span>
-            )}
-          </button>
-        </div>
-        
-        {showFilters && (
-          <div className="p-4 space-y-4">
-            {/* Search */}
-            <div className="relative">
-              <Search className="w-4 h-4 absolute left-3 top-3 text-slate-400" />
-              <input
-                type="text"
-                placeholder="Search jobs, companies, or descriptions..."
-                value={filters.search}
-                onChange={(e) => handleFilterChange('search', e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              />
-            </div>
-            
-            {/* Filter Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
-              {/* Active Status */}
-              <select
-                value={filters.is_active}
-                onChange={(e) => handleFilterChange('is_active', e.target.value)}
-                className="px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              >
-                <option value="">All Status</option>
-                <option value="true">Active</option>
-                <option value="false">Inactive</option>
-              </select>
-              
-              {/* Job Type */}
-              <select
-                value={filters.type}
-                onChange={(e) => handleFilterChange('type', e.target.value)}
-                className="px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              >
-                <option value="">All Types</option>
-                {jobTypes.map(type => (
-                  <option key={type} value={type}>{type}</option>
-                ))}
-              </select>
-              
-              {/* Featured */}
-              <select
-                value={filters.featured}
-                onChange={(e) => handleFilterChange('featured', e.target.value)}
-                className="px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              >
-                <option value="">All Jobs</option>
-                <option value="true">Featured</option>
-                <option value="false">Not Featured</option>
-              </select>
-              
-              {/* Country */}
-              <select
-                value={filters.country}
-                onChange={(e) => handleFilterChange('country', e.target.value)}
-                className="px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              >
-                <option value="">All Countries</option>
-                {countries.map(country => (
-                  <option key={country} value={country}>{country}</option>
-                ))}
-              </select>
-              
-              {/* Experience Level */}
-             
-            </div>
-            
-            {/* Clear Filters */}
-            {Object.values(filters).some(v => v !== '') && (
-              <button
-                onClick={clearFilters}
-                className="flex items-center gap-2 px-4 py-2 text-slate-600 hover:text-slate-800 border border-slate-300 rounded-lg hover:bg-slate-50"
-              >
-                <X className="w-4 h-4" />
-                Clear Filters
-              </button>
-            )}
-          </div>
-        )}
-      </div>
-
-      {/* Table Section */}
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-        {loading ? (
-          <div className="p-8 text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-900 mx-auto"></div>
-            <p className="mt-4 text-slate-600">Loading jobs...</p>
-          </div>
-        ) : jobs.length === 0 ? (
-          <div className="p-8 text-center text-slate-500">
-            <Briefcase className="w-12 h-12 mx-auto mb-4 text-slate-300" />
-            <p>No jobs found matching your criteria</p>
-            {Object.values(filters).some(v => v !== '') && (
-              <button
-                onClick={clearFilters}
-                className="mt-2 text-blue-600 hover:text-blue-700"
-              >
-                Clear filters to see all jobs
-              </button>
-            )}
-          </div>
-        ) : (
-          <>
-            {/* Scrollable Table Container */}
-            <div className="overflow-x-auto relative">
-              <div className="min-w-[1400px]">
-                <table className="w-full">
-                  <thead className="bg-slate-50 border-b border-slate-200">
-                    <tr>
-                      <th className="px-4 py-4 text-left text-sm font-semibold text-slate-700 w-16">
-                        <Star className="w-4 h-4" />
-                      </th>
-                      <th className="px-4 py-4 text-left text-sm font-semibold text-slate-700 min-w-[250px]">Job Details</th>
-                      <th className="px-4 py-4 text-left text-sm font-semibold text-slate-700 min-w-[150px]">Company</th>
-                      <th className="px-4 py-4 text-left text-sm font-semibold text-slate-700 min-w-[120px]">Location</th>
-                      <th className="px-4 py-4 text-left text-sm font-semibold text-slate-700 min-w-[100px]">Type</th>
-                      <th className="px-4 py-4 text-left text-sm font-semibold text-slate-700 min-w-[120px]">Experience</th>
-                      <th className="px-4 py-4 text-left text-sm font-semibold text-slate-700 min-w-[150px]">Salary</th>
-                      <th className="px-4 py-4 text-left text-sm font-semibold text-slate-700 min-w-[100px]">Status</th>
-                      <th className="px-4 py-4 text-left text-sm font-semibold text-slate-700 min-w-[100px]">Posted</th>
-                      <th className="px-4 py-4 text-left text-sm font-semibold text-slate-700 min-w-[100px]">Expires</th>
-                      <th className="px-4 py-4 text-left text-sm font-semibold text-slate-700 min-w-[80px]">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-200">
-                    {jobs.map((job) => (
-                      <tr key={job.id} className="hover:bg-slate-50/50 transition-colors">
-                        {/* Featured Star */}
-                        <td className="px-4 py-4">
-                          {job.featured && (
-                            <Star className="w-4 h-4 text-yellow-500 fill-current" />
-                          )}
-                        </td>
-                        
-                        {/* Job Details */}
-                        <td className="px-4 py-4">
-                          <div className="flex items-start gap-3">
-                            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-green-500 to-blue-500 flex items-center justify-center flex-shrink-0">
-                              <Briefcase className="w-4 h-4 text-white" />
-                            </div>
-                            <div className="min-w-0">
-                              <h3 className="text-sm font-medium text-slate-800 truncate">
-                                {job.title}
-                              </h3>
-                              {job.description && (
-                                <p className="text-xs text-slate-600 mt-1">
-                                  {truncateText(job.description, 80)}
-                                </p>
-                              )}
-                            </div>
-                          </div>
-                        </td>
-                        
-                        {/* Company */}
-                        <td className="px-4 py-4">
-                          <div className="flex items-center gap-2">
-                            <Building2 className="w-4 h-4 text-slate-400 flex-shrink-0" />
-                            <span className="text-sm text-slate-600 truncate">{job.company || 'N/A'}</span>
-                          </div>
-                        </td>
-                        
-                        {/* Location */}
-                        <td className="px-4 py-4">
-                          <div className="flex items-start gap-2">
-                            <MapPin className="w-4 h-4 text-slate-400 flex-shrink-0 mt-0.5" />
-                            <div className="min-w-0">
-                              <div className="text-sm text-slate-600 truncate">{job.country || 'N/A'}</div>
-                              {job.location && (
-                                <div className="text-xs text-slate-500 truncate">{job.location}</div>
-                              )}
-                            </div>
-                          </div>
-                        </td>
-                        
-                        {/* Type */}
-                        <td className="px-4 py-4">
-                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
-                            {job.type || 'N/A'}
-                          </span>
-                        </td>
-                        
-                        {/* Experience */}
-                        <td className="px-4 py-4">
-                          <span className="text-sm text-slate-600">
-                            {job.years_experience || 'N/A'}
-                          </span>
-                        </td>
-                        
-                        {/* Salary */}
-                        <td className="px-4 py-4">
-                          <div className="flex items-center gap-2">
-                            <DollarSign className="w-4 h-4 text-slate-400 flex-shrink-0" />
-                            <span className="text-sm text-slate-600 truncate">
-                              {job.salary_range ? truncateText(job.salary_range, 20) : 'N/A'}
-                            </span>
-                          </div>
-                        </td>
-                        
-                        {/* Status */}
-                        <td className="px-4 py-4">
-                          <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${
-                            job.is_active 
-                              ? "bg-green-100 text-green-700" 
-                              : "bg-red-100 text-red-700"
-                          }`}>
-                            {job.is_active ? <CheckCircle className="w-3 h-3" /> : <XCircle className="w-3 h-3" />}
-                            {job.is_active ? "Active" : "Inactive"}
-                          </span>
-                        </td>
-                        
-                        {/* Posted Date */}
-                        <td className="px-4 py-4">
-                          <div className="flex items-center gap-2">
-                            <Calendar className="w-4 h-4 text-slate-400 flex-shrink-0" />
-                            <span className="text-sm whitespace-nowrap text-slate-600">
-                              {formatDate(job.posted_at || job.created_at)}
-                            </span>
-                          </div>
-                        </td>
-                        
-                        {/* Expires Date */}
-                        <td className="px-4 py-4">
-                          <span className="text-sm whitespace-nowrap text-slate-600">
-                            {job.expires_at ? formatDate(job.expires_at) : 'N/A'}
-                          </span>
-                        </td>
-                        
-                        {/* Actions */}
-                        <td className="px-4 py-4">
-                          <div className="flex items-center gap-2">
-                            <button
-                              className="p-1 rounded-full hover:bg-slate-100 transition-colors"
-                              onClick={(e) => handleDropdownClick(job, e)}
-                            >
-                              <MoreVertical className="w-4 h-4 text-slate-600" />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-
-                {/* Dropdown */}
-                {dropdownJob && (
-                  <JobDropdown
-                    job={dropdownJob.job}
-                    buttonRect={dropdownJob.rect}
-                    onClose={closeDropdown}
-                    onView={handleViewJob}
-                    onEdit={handleEditJob}
-                    onDelete={handleDeleteJob}
-                    onToggleStatus={handleToggleStatus}
-                  />
-                )}
-              </div>
-            </div>
-
-            {/* Pagination */}
-            <div className="px-6 py-4 border-t border-slate-200 flex items-center justify-between">
-              <div className="text-sm text-slate-600">
-                Showing {Math.min((currentPage - 1) * itemsPerPage + 1, totalCount)} to{' '}
-                {Math.min(currentPage * itemsPerPage, totalCount)} of {totalCount} jobs
-              </div>
-              
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                  disabled={currentPage === 1}
-                  className="flex items-center gap-1 px-3 py-2 text-sm border border-slate-300 rounded-lg hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <ChevronLeft className="w-4 h-4" />
-                  Previous
-                </button>
-                
-                <div className="flex items-center gap-1">
-                  {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                    const pageNum = Math.max(1, Math.min(totalPages - 4, currentPage - 2)) + i;
-                    return (
-                      <button
-                        key={pageNum}
-                        onClick={() => setCurrentPage(pageNum)}
-                        className={`px-3 py-2 text-sm rounded-lg ${
-                          currentPage === pageNum
-                            ? 'bg-blue-600 text-white'
-                            : 'border border-slate-300 hover:bg-slate-50'
-                        }`}
-                      >
-                        {pageNum}
-                      </button>
-                    );
-                  })}
-                </div>
-                
-                <button
-                  onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                  disabled={currentPage === totalPages}
-                  className="flex items-center gap-1 px-3 py-2 text-sm border border-slate-300 rounded-lg hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Next
-                  <ChevronRight className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-          </>
-        )}
-      </div>
-
-      {/* Modals */}
-      <ViewJobModal
-        job={viewModal.job}
-        isOpen={viewModal.isOpen}
-        onClose={() => setViewModal({ isOpen: false, job: null })}
-      />
-
-      <EditJobModal
-        job={editModal.job}
-        isOpen={editModal.isOpen}
-        onClose={() => setEditModal({ isOpen: false, job: null })}
-        onSave={handleSaveJob}
-      />
-
-      <DeleteJobModal
-        job={deleteModal.job}
-        isOpen={deleteModal.isOpen}
-        onClose={() => setDeleteModal({ isOpen: false, job: null })}
-        onConfirm={confirmDeleteJob}
-      />
-
-      <ToggleStatusModal
-        job={statusModal.job}
-        isOpen={statusModal.isOpen}
-        onClose={() => setStatusModal({ isOpen: false, job: null })}
-        onConfirm={confirmToggleStatus}
-      />
-    </div>
-  );
-};
-
-export default JobsTable;
+// import { Modal } from

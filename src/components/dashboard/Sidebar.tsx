@@ -10,7 +10,6 @@ const Sidebar = ({ activeView, setActiveView }: SidebarProps) => {
     { name: "Overview", key: "overview", icon: Eye },
     { name: "Users", key: "users", icon: Users },
     { name: "Jobs", key: "jobs", icon: Briefcase },
-    { name: "Submitted Jobs", key: "submitted-jobs", icon: Briefcase },
   ];
 
   return (

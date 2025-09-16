@@ -37,6 +37,7 @@ export type Database = {
   imported_at: string;              // when imported to your system
   updated_at: string;               // last update timestamp
             years_experience:string | null;
+            logo_url:string,
         }
         Insert: {
           application_email?: string | null
@@ -146,7 +147,29 @@ export type Database = {
           user_id?: string | null
         }
         Relationships: []
-      }
+      },
+      trial_info: {
+      Row: {
+        user_id: string;
+        trial_started_at: string | null;
+        trial_page_views: number;
+        created_at: string;
+        updated_at: string;
+      };
+      Insert: {
+        user_id: string;
+        trial_started_at?: string | null;
+        trial_page_views?: number;
+        created_at?: string;
+        updated_at?: string;
+      };
+      Update: {
+        trial_started_at?: string | null;
+        trial_page_views?: number;
+        updated_at?: string;
+      };
+      Relationships: [];
+    };
     }
     Views: {
       [_ in never]: never
